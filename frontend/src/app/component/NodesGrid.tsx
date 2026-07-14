@@ -83,7 +83,7 @@ export default function NodesGrid({ latest }: Props) {
           body: formData,
         },
       );
-
+      console.log(res)
       if (res.ok) fetchVolumeFiles();
       else alert("❌ Error en la transmisión del bloque.");
     } catch (err) {

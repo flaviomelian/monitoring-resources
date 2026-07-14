@@ -4,6 +4,7 @@ import com.flavio.backend.model.ResourceMetric;
 import com.flavio.backend.repository.ResourceMetricRepository;
 import com.flavio.backend.service.MonitoringService;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +26,8 @@ public class MetricsController {
     private final ResourceMetricRepository metricRepository;
     @Autowired
     private MonitoringService monitoringService;
+    @Value("${STORAGE_PATH:/monitored/default}")
+    private String storagePath;
 
     public MetricsController(ResourceMetricRepository metricRepository) {
         this.metricRepository = metricRepository;
@@ -55,10 +61,18 @@ public class MetricsController {
     @PostMapping("/replica/receive")
     public ResponseEntity<String> receiveInReplica(@RequestParam("file") MultipartFile file) {
         try {
+            // Usamos la variable inyectada dinámicamente
+            Path directory = Paths.get(storagePath);
+            if (!Files.exists(directory))
+                Files.createDirectories(directory);
+
+            Path dest = directory.resolve(file.getOriginalFilename());
+            Files.write(dest, file.getBytes());
+
             monitoringService.saveAndProcessMetric(file);
-            return ResponseEntity.ok("Métricas actualizadas e insertadas en MySQL.");
+            return ResponseEntity.ok("Archivo replicado en " + storagePath);
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("Error al escribir el archivo en la Réplica: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error al escribir el archivo: " + e.getMessage());
         }
     }
 
@@ -69,7 +83,9 @@ public class MetricsController {
 
     @GetMapping("/replica/files")
     public ResponseEntity<List<String>> getReplicaFiles() {
-        File folder = new File("/");
+        // Usamos la variable inyectada para que cada réplica liste su propia carpeta
+        File folder = new File(storagePath);
+        if (!folder.exists()) folder.mkdirs();
         String[] files = folder.list();
         return ResponseEntity.ok(files != null ? Arrays.asList(files) : List.of());
     }
