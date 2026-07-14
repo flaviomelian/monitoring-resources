@@ -5,6 +5,8 @@ import {
   RefreshCw,
   HardDrive,
   ShieldAlert,
+  Plus,
+  Server,
 } from "lucide-react";
 import { Metric } from "../types";
 
@@ -14,6 +16,7 @@ interface Props {
 
 export default function NodesGrid({ latest }: Props) {
   const [uploading, setUploading] = useState(false);
+  const [creatingNode, setCreatingNode] = useState(false); // Estado para controlar la creación de réplicas
   const [ingestFiles, setIngestFiles] = useState<string[]>([]);
   const [replica1Files, setReplica1Files] = useState<string[]>([]);
   const [replica2Files, setReplica2Files] = useState<string[]>([]);
@@ -50,13 +53,11 @@ export default function NodesGrid({ latest }: Props) {
   useEffect(() => {
     const controller = new AbortController();
 
-    // Envolvemos la primera carga en un contexto asíncrono puro para evitar el trigger síncrono del linter
     const initFetch = async () => {
       await fetchVolumeFiles(controller.signal);
     };
     initFetch();
 
-    // Polling seguro cada 5 segundos: esto ya corre asíncrono por el entorno de la plataforma (setInterval)
     const interval = setInterval(() => {
       fetchVolumeFiles(controller.signal);
     }, 5000);
@@ -83,7 +84,7 @@ export default function NodesGrid({ latest }: Props) {
           body: formData,
         },
       );
-      console.log(res)
+      console.log(res);
       if (res.ok) fetchVolumeFiles();
       else alert("❌ Error en la transmisión del bloque.");
     } catch (err) {
@@ -94,20 +95,68 @@ export default function NodesGrid({ latest }: Props) {
     }
   };
 
+  // Función para enviar la orden de levantar un nuevo contenedor
+  const handleCreateNode = async () => {
+    setCreatingNode(true);
+    try {
+      const res = await fetch("http://localhost:8081/api/cluster/scale-up", {
+        method: "POST",
+      });
+      const data = await res.text();
+
+      if (res.ok) {
+        alert(`🚀 ¡Orquestación exitosa!\n${data}`);
+        fetchVolumeFiles();
+      } else {
+        alert(`❌ Error al escalar el clúster: ${data}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Error crítico en la llamada de red al orquestador.");
+    } finally {
+      setCreatingNode(false);
+    }
+  };
+
   return (
     <section className="space-y-4 mt-10">
       <div className="flex items-center justify-between">
         <h2 className="text-xs uppercase font-bold tracking-wider text-slate-500">
           Desglose de Almacenamiento por Nodo del Clúster
         </h2>
-        <button
-          onClick={() => fetchVolumeFiles()}
-          className="text-slate-500 hover:text-slate-300 transition-colors p-1 hover:bg-slate-900 rounded-lg"
-        >
-          <RefreshCw
-            className={`h-4 w-4 ${uploading ? "animate-spin text-amber-400" : ""}`}
-          />
-        </button>
+        
+        <div className="flex items-center gap-3">
+          {/* BOTÓN ORQUESTRADOR: Escalar Clúster */}
+          <button
+            onClick={handleCreateNode}
+            disabled={creatingNode}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border 
+              ${
+                creatingNode
+                  ? "bg-purple-950/20 border-purple-500/20 text-purple-400/50 cursor-not-allowed animate-pulse"
+                  : "bg-purple-500/10 border-purple-500/30 text-purple-400 hover:bg-purple-500/20 hover:border-purple-500/50"
+              }`}
+          >
+            {creatingNode ? (
+              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Plus className="h-3.5 w-3.5" />
+            )}
+            {creatingNode ? "Levantando Réplica..." : "Añadir Nodo Réplica"}
+          </button>
+
+          {/* Botón Refrescar */}
+          <button
+            onClick={() => fetchVolumeFiles()}
+            className="text-slate-500 hover:text-slate-300 transition-colors p-1.5 hover:bg-slate-900 rounded-lg border border-transparent hover:border-slate-800"
+          >
+            <RefreshCw
+              className={`h-4 w-4 ${
+                uploading ? "animate-spin text-amber-400" : ""
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
       {/* NODO 1: GATEWAY DE INGESTA */}
@@ -115,7 +164,8 @@ export default function NodesGrid({ latest }: Props) {
         <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none" />
         <div>
           <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-            <span className="font-bold text-sm tracking-tight text-slate-200 font-mono">
+            <span className="font-bold text-sm tracking-tight text-slate-200 font-mono flex items-center gap-2">
+              <Server className="h-4 w-4 text-amber-500/60" />
               alpine-ingest-app
             </span>
             <span className="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-black tracking-wide">
@@ -181,7 +231,8 @@ export default function NodesGrid({ latest }: Props) {
           <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
           <div>
             <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <span className="font-bold text-sm tracking-tight text-slate-200 font-mono">
+              <span className="font-bold text-sm tracking-tight text-slate-200 font-mono flex items-center gap-2">
+                <Server className="h-4 w-4 text-purple-500/60" />
                 alpine-replica-1
               </span>
               <span className="text-[9px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded font-black tracking-wide">
@@ -199,16 +250,15 @@ export default function NodesGrid({ latest }: Props) {
             </div>
           </div>
 
-          {/* Contenedor con Scroll Estilizado y Delgado */}
           <div
             className="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 h-40 overflow-y-auto space-y-1.5 custom-scrollbar
-      [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-track]:bg-slate-950/20
-      [&::-webkit-scrollbar-thumb]:bg-slate-800
-      [&::-webkit-scrollbar-thumb]:rounded-full
-      hover:[&::-webkit-scrollbar-thumb]:bg-purple-500/30
-      [scrollbar-width:thin]
-      [scrollbar-color:theme(colors.slate.800)_transparent]"
+              [&::-webkit-scrollbar]:w-1.5
+              [&::-webkit-scrollbar-track]:bg-slate-950/20
+              [&::-webkit-scrollbar-thumb]:bg-slate-800
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              hover:[&::-webkit-scrollbar-thumb]:bg-purple-500/30
+              [scrollbar-width:thin]
+              [scrollbar-color:theme(colors.slate.800)_transparent]"
           >
             <p className="text-[9px] uppercase font-bold text-slate-500 tracking-wider">
               Volumen Espejo Activo
@@ -238,7 +288,8 @@ export default function NodesGrid({ latest }: Props) {
           <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-2xl pointer-events-none" />
           <div>
             <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-              <span className="font-bold text-sm tracking-tight text-slate-200 font-mono">
+              <span className="font-bold text-sm tracking-tight text-slate-200 font-mono flex items-center gap-2">
+                <Server className="h-4 w-4 text-cyan-500/60" />
                 alpine-replica-2
               </span>
               <span className="text-[9px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded font-black tracking-wide">
@@ -256,16 +307,15 @@ export default function NodesGrid({ latest }: Props) {
             </div>
           </div>
 
-          {/* Contenedor con Scroll Estilizado y Delgado */}
           <div
             className="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 h-40 overflow-y-auto space-y-1.5 custom-scrollbar
-      [&::-webkit-scrollbar]:w-1.5
-      [&::-webkit-scrollbar-track]:bg-slate-950/20
-      [&::-webkit-scrollbar-thumb]:bg-slate-800
-      [&::-webkit-scrollbar-thumb]:rounded-full
-      hover:[&::-webkit-scrollbar-thumb]:bg-cyan-500/30
-      [scrollbar-width:thin]
-      [scrollbar-color:theme(colors.slate.800)_transparent]"
+              [&::-webkit-scrollbar]:w-1.5
+              [&::-webkit-scrollbar-track]:bg-slate-950/20
+              [&::-webkit-scrollbar-thumb]:bg-slate-800
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              hover:[&::-webkit-scrollbar-thumb]:bg-cyan-500/30
+              [scrollbar-width:thin]
+              [scrollbar-color:theme(colors.slate.800)_transparent]"
           >
             <p className="text-[9px] uppercase font-bold text-slate-500 tracking-wider">
               Volumen Espejo Respaldo

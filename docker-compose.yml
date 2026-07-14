@@ -24,6 +24,7 @@ services:
       - "8081:8080"
     volumes:
       - ./data/ingest:/monitored/ingest:rw
+      - /var/run/docker.sock:/var/run/docker.sock # <-- Añadido aquí para darle superpoderes de Docker
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root

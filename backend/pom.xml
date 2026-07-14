@@ -31,6 +31,26 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
+		<!-- 1. Docker Java API (Estructuras de datos, modelos, etc.) -->
+		<dependency>
+			<groupId>com.github.docker-java</groupId>
+			<artifactId>docker-java-api</artifactId>
+			<version>3.3.6</version>
+		</dependency>
+
+		<!-- 2. Docker Java Core (Aquí es donde REALMENTE vive DockerClientBuilder) -->
+		<dependency>
+			<groupId>com.github.docker-java</groupId>
+			<artifactId>docker-java-core</artifactId>
+			<version>3.3.6</version>
+		</dependency>
+
+		<!-- 3. Transporte HTTP5 (Para que se hable con el socket de Linux) -->
+		<dependency>
+			<groupId>com.github.docker-java</groupId>
+			<artifactId>docker-java-transport-httpclient5</artifactId>
+			<version>3.3.6</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
