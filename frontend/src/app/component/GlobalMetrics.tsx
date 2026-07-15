@@ -19,7 +19,7 @@ export default function GlobalMetrics({ latest }: Props) {
               {latest.cpuUsage}%
             </h3>
           </div>
-          <Cpu className="text-slate-700 h-10 w-10 stroke-[1.5]" />
+          <Cpu className="text-slate-700 h-15 w-15 stroke-[1.5]" />
         </div>
 
         <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl flex items-center justify-between">
@@ -29,17 +29,17 @@ export default function GlobalMetrics({ latest }: Props) {
               {latest.ramUsedGB} / {latest.ramTotalGB} GB
             </h3>
           </div>
-          <Server className="text-slate-700 h-10 w-10 stroke-[1.5]" />
+          <Server className="text-slate-700 h-20 w-20 stroke-[1.5]" />
         </div>
 
         <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl flex items-center justify-between">
           <div>
-            <p className="text-slate-400 text-sm font-medium">Almacenamiento Base (Ubuntu)</p>
+            <p className="text-slate-400 text-sm font-medium">Almacenamiento</p>
             <h3 className="text-2xl md:text-3xl font-black mt-1 text-purple-400">
               {latest.diskUsagePercentage}%
             </h3>
           </div>
-          <HardDrive className="text-slate-700 h-10 w-10 stroke-[1.5]" />
+          <HardDrive className="text-slate-700 h-20 w-20 stroke-[1.5]" />
         </div>
       </div>
     </section>

@@ -62,10 +62,10 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-wrap gap-2">
             {[
-              { role: "all", name: "⚡ Todo el Clúster" },
-              { role: "master", name: "🖥️ Nodo Master (CPU/RAM)" },
-              { role: "ingesta", name: "📥 Nodo Ingesta (Búfer)" },
-              { role: "replica", name: "💾 Nodo Réplica (Almacenamiento)" },
+              { role: "all", name: "Todo el Clúster" },
+              { role: "master", name: "Nodo Master (CPU/RAM)" },
+              { role: "ingesta", name: "Nodo Ingesta (Búfer)" },
+              { role: "replica", name: "Nodo Réplica (Almacenamiento)" },
             ].map((btn) => (
               <button
                 key={btn.role}

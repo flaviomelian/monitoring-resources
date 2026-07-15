@@ -41,7 +41,7 @@ export default function HistoryChart({ metrics, showAll, setShowAll, activeRole 
             showAll ? "bg-purple-500/10 border-purple-500 text-purple-400" : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700"
           }`}
         >
-          {showAll ? "📊 Histórico Completo" : "⏱️ Tiempo Real (Últimos 20)"}
+          {showAll ? "Histórico Completo" : "Tiempo Real (Últimos 20 ')"}
         </button>
       </div>
 
