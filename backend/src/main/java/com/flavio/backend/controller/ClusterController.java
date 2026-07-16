@@ -20,10 +20,14 @@ public class ClusterController {
 
     @PostMapping("/scale-up")
     public ResponseEntity<String> scaleUp() {
+        System.out.println("LLEGUE AL PUTO ENDPOINT"); //ESTO NO SE VE
         try {
             String result = orchestratorService.createNewReplicaNode();
             return ResponseEntity.ok(result);
         } catch (Exception e) {
+            System.out.println("===========================ERROR=========================");
+            e.printStackTrace();
+            System.out.println("===========================ERROR=========================");
             return ResponseEntity.status(500).body("Error al escalar el clúster: " + e.getMessage());
         }
     }

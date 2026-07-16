@@ -24,14 +24,18 @@ services:
       - "8081:8080"
     volumes:
       - ./data/ingest:/monitored/ingest:rw
-      - /var/run/docker.sock:/var/run/docker.sock # <-- Añadido aquí para darle superpoderes de Docker
+      - ~/.ssh/id_local_ssh:/root/.ssh/id_local_ssh:ro
+      - ./backend/scripts/launch-replica.sh:/app/scripts/launch-replica.sh:ro
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root_password
-      # Le pasamos las dos rutas de réplica por entorno al nodo de ingesta
+      # Le pasamos las rutas de las réplicas para cuando las tenga que consultar
       - REPLICA_ONE_URL=http://alpine-replica-1:8080
       - REPLICA_TWO_URL=http://alpine-replica-2:8080
+    extra_hosts:
+      # 🖥️ Esto mapea "host.docker.internal" a la IP de tu S.O. Host para el SSH
+      - "host.docker.internal:host-gateway"
     depends_on:
       custom-linux-db:
         condition: service_healthy

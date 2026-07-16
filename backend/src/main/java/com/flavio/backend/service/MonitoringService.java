@@ -67,51 +67,57 @@ public class MonitoringService {
 
     /**
      * LÓGICA DE INGEST: Retiene el flujo 2 segundos y replica en abanico (Fan-Out)
-     * a todos los nodos de respaldo configurados sin provocar deadlocks.
+     * a todos los nodos de respaldo de manera puramente concurrente y reactiva,
+     * sin bloquear hilos del sistema ni recurrir a CompletableFuture.join().
      */
     public String forwardToReplica(MultipartFile file) {
         try {
             System.out.println("⏳ [INGEST] Reteniendo bloque 2 segundos simulando latencia de red de respaldo...");
             Thread.sleep(2000);
 
-            // CRÍTICO: Extraemos los bytes del archivo AQUÍ en el hilo principal.
-            // Si pasamos el .getResource() directo al WebClient de forma asíncrona, se
-            // congela el Stream.
+            // Extraemos los bytes del archivo de forma segura en el hilo de entrada
             byte[] fileBytes = file.getBytes();
             String filename = file.getOriginalFilename();
 
-            System.out.println("🚀 [INGEST] Chutando archivo concurrentemente hacia los nodos de almacenamiento...");
+            if (webClients.isEmpty()) {
+                System.out.println("⚠️ [INGEST] No hay nodos de réplica configurados en el clúster.");
+                return "No hay réplicas activas para sincronizar.";
+            }
 
-            // Creamos las tareas asíncronas usando CompletableFuture nativos sobre el
-            // WebClient
-            List<CompletableFuture<String>> futures = webClients.stream()
-                    .map(client -> CompletableFuture.supplyAsync(() -> {
-                        try {
-                            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-                            // Envolvemos los bytes para que no dependa del stream del contenedor de Ingesta
-                            body.add("file", new ByteArrayResource(fileBytes) {
-                                @Override
-                                public String getFilename() {
-                                    return filename;
-                                }
-                            });
+            System.out.println("🚀 [INGEST] Disparando réplicas concurrentemente a " + webClients.size() + " nodos...");
 
-                            return client.post()
-                                    .uri("/api/metrics/replica/receive")
-                                    .contentType(MediaType.MULTIPART_FORM_DATA)
-                                    .bodyValue(body)
-                                    .retrieve()
-                                    .bodyToMono(String.class)
-                                    .block(); // Aquí el .block() es seguro porque corre aislado en un hilo ForkJoin
-                        } catch (Exception err) {
-                            System.err.println("❌ Error real al replicar en nodo: " + err.getMessage());
-                            return "❌ Error en réplica individual";
-                        }
-                    }))
-                    .toList();
+            // 1. Convertimos la lista de WebClients en un Flux de operaciones reactivas
+            // asíncronas
+            reactor.core.publisher.Flux.fromIterable(webClients)
+                    .flatMap(client -> {
+                        // Construimos el cuerpo multipart para cada cliente de forma independiente
+                        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+                        body.add("file", new ByteArrayResource(fileBytes) {
+                            @Override
+                            public String getFilename() {
+                                return filename;
+                            }
+                        });
 
-            // Esperamos de forma síncrona a que terminen todos los hilos concurrentes
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+                        // Ejecutamos el POST reactivo y capturamos cualquier error individualmente
+                        return client.post()
+                                .uri("/api/metrics/replica/receive")
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .bodyValue(body)
+                                .retrieve()
+                                .bodyToMono(String.class)
+                                .doOnSuccess(res -> System.out.println("✅ Bloque enviado con éxito a una réplica."))
+                                .onErrorResume(err -> {
+                                    System.err.println("❌ Error al replicar en nodo: " + err.getMessage());
+                                    // Evitamos que la caída de un nodo tire abajo el pipeline del resto
+                                    return Mono.just("❌ Fallo en nodo");
+                                });
+                    })
+                    // 2. Ejecutamos todas las suscripciones de manera concurrente y bloqueamos
+                    // únicamente al final para sincronizar el flujo de la petición REST del
+                    // controlador.
+                    .collectList()
+                    .block(); // Bloqueo único y seguro en el punto de salida del hilo HTTP principal
 
             System.out.println("✅ [INGEST] Sincronización del clúster completada con éxito.");
             return "Sincronización del clúster completada.";
