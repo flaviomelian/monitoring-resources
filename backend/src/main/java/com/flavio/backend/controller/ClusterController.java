@@ -20,7 +20,7 @@ public class ClusterController {
 
     @PostMapping("/scale-up")
     public ResponseEntity<String> scaleUp() {
-        System.out.println("LLEGUE AL PUTO ENDPOINT"); //ESTO NO SE VE
+        System.out.println("LLEGUE AL PUTO ENDPOINT");
         try {
             String result = orchestratorService.createNewReplicaNode();
             return ResponseEntity.ok(result);
