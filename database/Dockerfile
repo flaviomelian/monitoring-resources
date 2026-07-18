@@ -2,20 +2,21 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Actualizamos el Ubuntu real e instalamos el servidor de MySQL a pelo
+# Añadimos dos2unix a las herramientas de instalación
 RUN apt-get update && apt-get install -y \
     mysql-server \
     sudo \
     curl \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
-# Truco de Sysadmin: Permitir que MySQL escuche conexiones externas (desde la red de Docker)
 RUN sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/mysql.conf.d/mysqld.cnf
 
-# Copiamos nuestro script Bash de arranque
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY entrypoint.sh ./entrypoint.sh
+
+# Forzamos la conversión a formato Unix antes de darle permisos
+RUN dos2unix ./entrypoint.sh && chmod +x /entrypoint.sh
 
 EXPOSE 3306
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
