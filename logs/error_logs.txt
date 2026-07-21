@@ -1,0 +1,8 @@
+[2026-07-21T12:48:55.555127989] ERROR en scale-up: Error ejecutando SSH (Code 127): 
+sh: docker: not found
+
+[2026-07-21T12:54:37.531912201] ERROR en scale-up: Error ejecutando SSH (Code 127): 
+sh: docker: not found
+
+[2026-07-21T12:54:43.219257021] ERROR en scale-up: Error ejecutando SSH (Code 127): 
+sh: docker: not found

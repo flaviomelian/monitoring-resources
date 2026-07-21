@@ -1,15 +1,17 @@
 services:
   custom-linux-db:
-    build: ./database
+    image: mysql:8.0
     container_name: linux-mysql-sandbox
-    restart: always
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: sandbox_db
+      MYSQL_ROOT_PASSWORD: root_password
     ports:
       - "3307:3306"
     volumes:
-      - ./data/ingest:/monitored/ingest
-      - mysql_custom_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -uroot -proot || exit 1"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,15 +28,14 @@ services:
       - ./data/ingest:/monitored/ingest:rw
       - ~/.ssh/id_local_ssh:/root/.ssh/id_local_ssh:ro
       - ./backend/scripts/launch-replica.sh:/app/scripts/launch-replica.sh:ro
+      - ./logs:/app/logs
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root_password
-      # Le pasamos las rutas de las réplicas para cuando las tenga que consultar
       - REPLICA_ONE_URL=http://alpine-replica-1:8080
       - REPLICA_TWO_URL=http://alpine-replica-2:8080
     extra_hosts:
-      # 🖥️ Esto mapea "host.docker.internal" a la IP de tu S.O. Host para el SSH
       - "host.docker.internal:host-gateway"
     depends_on:
       custom-linux-db:
@@ -42,7 +43,6 @@ services:
     networks:
       - monitor-net
 
-  # RÉPLICA A
   alpine-replica-1:
     build: ./backend
     container_name: alpine-replica-1
@@ -62,7 +62,6 @@ services:
     networks:
       - monitor-net
 
-  # RÉPLICA B (El nuevo nodo de respaldo espejo)
   alpine-replica-2:
     build: ./backend
     container_name: alpine-replica-2
@@ -83,7 +82,7 @@ services:
       - monitor-net
 
 volumes:
-  mysql_custom_data:
+  db_data:
 
 networks:
   monitor-net:

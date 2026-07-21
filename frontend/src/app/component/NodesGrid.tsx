@@ -13,7 +13,6 @@ interface Props {
   latest: Metric;
 }
 
-// Estructura para almacenar las réplicas detectadas dinámicamente
 interface ReplicaNode {
   port: number;
   name: string;
@@ -24,61 +23,81 @@ export default function NodesGrid({ latest }: Props) {
   const [uploading, setUploading] = useState(false);
   const [creatingNode, setCreatingNode] = useState(false);
   const [ingestFiles, setIngestFiles] = useState<string[]>([]);
-  
-  // Estado dinámico para todas las réplicas activas detectadas
   const [activeReplicas, setActiveReplicas] = useState<ReplicaNode[]>([]);
-
-  // Rango de puertos donde esperas que se levanten tus réplicas
-  // Por ejemplo, de la 8082 a la 8086 (soporta hasta 5 réplicas simultáneas de base)
-  const REPLICA_PORTS = [8082, 8083, 8084, 8085, 8086, 8087, 8088, 8089, 8090];
 
   const fetchVolumeFiles = async (signal?: AbortSignal) => {
     try {
       // 1. Obtener archivos del nodo de ingesta principal
-      const resIngest = await fetch("http://localhost:8081/api/metrics/ingest/files", { signal }).catch(() => null);
+      const resIngest = await fetch(
+        "http://localhost:8081/api/metrics/ingest/files",
+        { signal },
+      ).catch(() => null);
       const dataIngest = resIngest?.ok ? await resIngest.json() : [];
       setIngestFiles(dataIngest);
 
-      // 2. Escaneo y obtención en paralelo de las réplicas activas
-      const replicaPromises = REPLICA_PORTS.map(async (port, index) => {
+      // 2. Pedir al backend las URLs de los nodos registrados
+      const resNodes = await fetch("http://localhost:8081/api/cluster/nodes", {
+        signal,
+      }).catch(() => null);
+
+      // Recibimos la lista de URLs: ["http://localhost:8082", "http://localhost:8083"...]
+      const nodeUrls: string[] = resNodes?.ok ? await resNodes.json() : [];
+
+      // Log para verificar el JSON recibido directamente
+      console.log("URLs recibidas del backend:", nodeUrls);
+
+      // 3. Consultar dinámicamente CADA URL devuelta
+      const replicaPromises = nodeUrls.map(async (baseUrl, index) => {
         try {
-          const res = await fetch(`http://localhost:${port}/api/metrics/replica/files`, { signal });
+          // Concatenamos el endpoint usando la URL base limpia
+          const res = await fetch(`${baseUrl}/api/metrics/replica/files`, {
+            signal,
+          });
+
           if (res.ok) {
             const files = await res.json();
+
+            // Extraemos el puerto de la URL por si lo necesitas en la UI
+            const port = parseInt(baseUrl.split(":").pop() || "8082", 10);
+
             return {
               port,
               name: `alpine-replica-${index + 1}`,
               files,
             } as ReplicaNode;
           }
-        } catch {
-          // Si falla la conexión (el contenedor no existe aún), devolvemos null
+        } catch (err) {
+          console.error(`Fallo al consultar réplica en ${baseUrl}:`, err);
           return null;
         }
         return null;
       });
 
       const results = await Promise.all(replicaPromises);
-      
-      // Filtramos las que han respondido correctamente (no nulas) y actualizamos el estado
-      const detectedReplicas = results.filter((r): r is ReplicaNode => r !== null);
-      setActiveReplicas(detectedReplicas);
 
+      const detectedReplicas = results.filter(
+        (r): r is ReplicaNode => r !== null,
+      );
+
+      setActiveReplicas(detectedReplicas);
     } catch (err) {
-      console.error("Error devorando directorios del clúster:", err);
+      if (err instanceof Error && err.name !== "AbortError") {
+        console.error("Error consultando directorios del clúster:", err);
+      }
     }
   };
 
   useEffect(() => {
     const controller = new AbortController();
 
-    const initFetch = async () => {
+    const loadClusterData = async () => {
       await fetchVolumeFiles(controller.signal);
     };
-    initFetch();
+
+    loadClusterData();
 
     const interval = setInterval(() => {
-      fetchVolumeFiles(controller.signal);
+      loadClusterData();
     }, 5000);
 
     return () => {
@@ -96,10 +115,13 @@ export default function NodesGrid({ latest }: Props) {
 
     setUploading(true);
     try {
-      const res = await fetch("http://localhost:8081/api/metrics/ingest/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        "http://localhost:8081/api/metrics/ingest/upload",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
       if (res.ok) fetchVolumeFiles();
       else alert("❌ Error en la transmisión del bloque.");
     } catch (err) {
@@ -111,23 +133,29 @@ export default function NodesGrid({ latest }: Props) {
   };
 
   const handleCreateNode = async () => {
+    console.log("Iniciando solicitud de escalado...");
     setCreatingNode(true);
     try {
       const res = await fetch("http://localhost:8081/api/cluster/scale-up", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
+
+      console.log("HTTP Status Code:", res.status);
       const data = await res.text();
+      console.log("Respuesta del servidor:", data);
 
       if (res.ok) {
         alert(`🚀 ¡Orquestación exitosa!\n${data}`);
-        // Forzamos refresco inmediato para capturar el nuevo puerto levantado
-        setTimeout(() => fetchVolumeFiles(), 1500); 
+        setTimeout(() => fetchVolumeFiles(), 2000);
       } else {
-        alert(`❌ Error al escalar el clúster: ${data}`);
+        alert(`❌ Error (${res.status}) al escalar el clúster:\n${data}`);
       }
     } catch (err) {
-      console.error(err);
-      alert("❌ Error crítico en la llamada de red al orquestador.");
+      console.error("Error de red/CORS:", err);
+      alert("❌ Fallo de red con el orquestador. Revisa los logs de consola.");
     } finally {
       setCreatingNode(false);
     }
@@ -139,7 +167,7 @@ export default function NodesGrid({ latest }: Props) {
         <h2 className="text-xs uppercase font-bold tracking-wider text-slate-500">
           Desglose de Almacenamiento por Nodo del Clúster
         </h2>
-        
+
         <div className="flex items-center gap-3">
           <button
             onClick={handleCreateNode}
@@ -241,17 +269,19 @@ export default function NodesGrid({ latest }: Props) {
       {activeReplicas.length === 0 ? (
         <div className="bg-slate-900/40 border border-slate-800/50 rounded-xl p-8 text-center">
           <p className="text-slate-500 text-sm italic">
-            Buscando réplicas activas en la red del clúster...
+            No se detectan réplicas registradas o activas...
           </p>
         </div>
       ) : (
-        <div className={`grid grid-cols-1 gap-6 ${
-          activeReplicas.length === 1 
-            ? "md:grid-cols-1 max-w-md mx-auto" 
-            : activeReplicas.length === 2 
-            ? "md:grid-cols-2 max-w-4xl" 
-            : "md:grid-cols-2 lg:grid-cols-3"
-        }`}>
+        <div
+          className={`grid grid-cols-1 gap-6 ${
+            activeReplicas.length === 1
+              ? "md:grid-cols-1 max-w-md mx-auto"
+              : activeReplicas.length === 2
+                ? "md:grid-cols-2 max-w-4xl"
+                : "md:grid-cols-2 lg:grid-cols-3"
+          }`}
+        >
           {activeReplicas.map((replica) => (
             <div
               key={replica.port}
@@ -274,21 +304,14 @@ export default function NodesGrid({ latest }: Props) {
                   </p>
                   <p className="text-2xl font-black text-purple-400 font-mono mt-0.5">
                     {((latest.replicaDiskBytes || 0) / 1048576).toFixed(1)}{" "}
-                    <span className="text-xs font-normal text-slate-400">MB</span>
+                    <span className="text-xs font-normal text-slate-400">
+                      MB
+                    </span>
                   </p>
                 </div>
               </div>
 
-              <div
-                className="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 h-40 overflow-y-auto space-y-1.5 custom-scrollbar
-                  [&::-webkit-scrollbar]:w-1.5
-                  [&::-webkit-scrollbar-track]:bg-slate-950/20
-                  [&::-webkit-scrollbar-thumb]:bg-slate-800
-                  [&::-webkit-scrollbar-thumb]:rounded-full
-                  hover:[&::-webkit-scrollbar-thumb]:bg-purple-500/30
-                  [scrollbar-width:thin]
-                  [scrollbar-color:theme(colors.slate.800)_transparent]"
-              >
+              <div className="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 h-40 overflow-y-auto space-y-1.5 custom-scrollbar">
                 <p className="text-[9px] uppercase font-bold text-slate-500 tracking-wider">
                   Volumen Espejo Activo
                 </p>
