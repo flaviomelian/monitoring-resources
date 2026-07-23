@@ -32,6 +32,7 @@ export default function NodesGrid({ latest }: Props) {
         "http://localhost:8081/api/metrics/ingest/files",
         { signal },
       ).catch(() => null);
+
       const dataIngest = resIngest?.ok ? await resIngest.json() : [];
       setIngestFiles(dataIngest);
 
@@ -40,24 +41,28 @@ export default function NodesGrid({ latest }: Props) {
         signal,
       }).catch(() => null);
 
-      // Recibimos la lista de URLs: ["http://localhost:8082", "http://localhost:8083"...]
       const nodeUrls: string[] = resNodes?.ok ? await resNodes.json() : [];
 
-      // Log para verificar el JSON recibido directamente
-      console.log("URLs recibidas del backend:", nodeUrls);
-
-      // 3. Consultar dinámicamente CADA URL devuelta
+      // 3. Consultar dinámicamente CADA URL devuelta sin tumbar la UI si un nodo aún no responde
       const replicaPromises = nodeUrls.map(async (baseUrl, index) => {
         try {
-          // Concatenamos el endpoint usando la URL base limpia
+          // Le metemos un timeout propio para que si el nodo está arrancando no se quede colgado 15s
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+          // Si viene un signal global de desmontaje de React, abortamos también
+          if (signal) {
+            signal.addEventListener("abort", () => controller.abort());
+          }
+
           const res = await fetch(`${baseUrl}/api/metrics/replica/files`, {
-            signal,
+            signal: controller.signal,
           });
+
+          clearTimeout(timeoutId);
 
           if (res.ok) {
             const files = await res.json();
-
-            // Extraemos el puerto de la URL por si lo necesitas en la UI
             const port = parseInt(baseUrl.split(":").pop() || "8082", 10);
 
             return {
@@ -67,7 +72,8 @@ export default function NodesGrid({ latest }: Props) {
             } as ReplicaNode;
           }
         } catch (err) {
-          console.error(`Fallo al consultar réplica en ${baseUrl}:`, err);
+          // Silenciamos el error por consola cuando el nodo está naciendo o no responde.
+          // Simplemente retornamos null para que la réplica no aparezca activa aún.
           return null;
         }
         return null;
@@ -82,7 +88,8 @@ export default function NodesGrid({ latest }: Props) {
       setActiveReplicas(detectedReplicas);
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") {
-        console.error("Error consultando directorios del clúster:", err);
+        // Solo logueamos errores catastróficos del cliente principal
+        console.warn("Aviso al consultar el clúster:", err.message);
       }
     }
   };
@@ -122,8 +129,10 @@ export default function NodesGrid({ latest }: Props) {
           body: formData,
         },
       );
-      if (res.ok) fetchVolumeFiles();
-      else alert("❌ Error en la transmisión del bloque.");
+      if (res.ok) {
+        fetchVolumeFiles();
+        alert("✅ Archivo añadido correctamente.");
+      } else alert("❌ Error en la transmisión del bloque.");
     } catch (err) {
       console.error(err);
       alert("❌ Fallo de red con el nodo de Ingesta.");

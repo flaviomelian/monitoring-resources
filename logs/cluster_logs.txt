@@ -91,3 +91,61 @@ Levantando contenedor en Docker...
 ** The server may need to be upgraded. See https://openssh.com/pq.html
 3858f39c110cd6af349b9686a5058ea0360d99acf446485c0a604fb97a486656
 ¡Contenedor alpine-replica-9 levantado con éxito en el puerto 8090!
+
+[2026-07-23T13:57:40.652854158] ERROR en scale-up: Timeout (15s): El script 'launch-replica.sh' se quedó bloqueado. Salida parcial:
+/app/scripts/launch-replica.sh: line 2: $'\r': command not found
+/app/scripts/launch-replica.sh: line 8: $'\r': command not found
+cp: cannot stat '/root/.ssh/id_local_ssh'$'\r': No such file or directory
+chmod: cannot access '/tmp/id_local_ssh'$'\r\r': No such file or directory
+/app/scripts/launch-replica.sh: line 12: $'\r': command not found
+/app/scripts/launch-replica.sh: line 15: $'\r': command not found
+Calculando el siguiente índice de réplica...
+/app/scripts/launch-replica.sh: line 17: $'\r': command not found
+/app/scripts/launch-replica.sh: line 20: $'\r': command not found
+/app/scripts/launch-replica.sh: line 26: $'\r': command not found
+/app/scripts/launch-replica.sh: line 27: $'\r': command not found
+
+
+[2026-07-23T14:00:14.433836470] ERROR en scale-up: Timeout (15s): El script 'launch-replica.sh' se quedó bloqueado. Salida parcial:
+/app/scripts/launch-replica.sh: line 2: $'\r': command not found
+/app/scripts/launch-replica.sh: line 8: $'\r': command not found
+cp: cannot stat '/root/.ssh/id_local_ssh'$'\r': No such file or directory
+chmod: cannot access '/tmp/id_local_ssh'$'\r\r': No such file or directory
+/app/scripts/launch-replica.sh: line 12: $'\r': command not found
+/app/scripts/launch-replica.sh: line 15: $'\r': command not found
+Calculando el siguiente índice de réplica...
+/app/scripts/launch-replica.sh: line 17: $'\r': command not found
+/app/scripts/launch-replica.sh: line 20: $'\r': command not found
+/app/scripts/launch-replica.sh: line 26: $'\r': command not found
+/app/scripts/launch-replica.sh: line 27: $'\r': command not found
+
+[2026-07-23T14:02:59.620440928] Scale-up ejecutado con éxito: Calculando el siguiente índice de réplica...
+La última réplica detectada fue la alpine-replica-2.
+Creando alpine-replica-3 en el puerto del Host: 8084...
+Limpiando posibles contenedores con el nombre: monitoring-resources-alpine-replica-3...
+Levantando contenedor en Docker...
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+0f5be0452068bb2ed890e12c097052c3a667ad428b58a7802294d8f3bd0af6ba
+¡Contenedor alpine-replica-3 levantado con éxito en el puerto 8084!
+[2026-07-23T14:07:14.671054008] Scale-up ejecutado con éxito: Calculando el siguiente índice de réplica...
+La última réplica detectada fue la alpine-replica-3.
+Creando alpine-replica-4 en el puerto del Host: 8085...
+Limpiando posibles contenedores con el nombre: monitoring-resources-alpine-replica-4...
+Levantando contenedor en Docker...
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+b1faeebad9e9033b0f386024e76a0e50cea2bc2b5e8599bb2db72c4a79099a48
+¡Contenedor alpine-replica-4 levantado con éxito en el puerto 8085!
+[2026-07-23T14:23:29.688938209] Scale-up ejecutado con éxito: Calculando el siguiente índice de réplica...
+La última réplica detectada fue la alpine-replica-4.
+Creando alpine-replica-5 en el puerto del Host: 8086...
+Limpiando posibles contenedores con el nombre: monitoring-resources-alpine-replica-5...
+Levantando contenedor en Docker...
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+7f28ee1661cd0c7e98a7284cdec77fbf46b2be30a60532cab90544846082b42f
+¡Contenedor alpine-replica-5 levantado con éxito en el puerto 8086!

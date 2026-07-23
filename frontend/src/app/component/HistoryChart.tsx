@@ -30,7 +30,7 @@ export default function HistoryChart({ metrics, showAll, setShowAll, activeRole 
     <div className="bg-slate-900 border border-slate-800 p-6 rounded-xl">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h2 className="text-lg font-semibold">
-          {activeRole === "all" && "Histórico de Carga Reciente"}
+          {activeRole === "all" && "Histórico de Carga"}
           {activeRole === "master" && "Rendimiento: Nodo Principal"}
           {activeRole === "ingesta" && "Carga: Nodo de Ingesta"}
           {activeRole === "replica" && "Estado: Nodo de Réplica"}

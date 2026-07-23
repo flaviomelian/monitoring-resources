@@ -65,19 +65,17 @@ public class MonitoringService {
         }
     }
 
-    /**
-     * LÓGICA DE INGEST: Retiene el flujo 2 segundos y replica en abanico (Fan-Out)
-     * a todos los nodos de respaldo de manera puramente concurrente y reactiva,
-     * sin bloquear hilos del sistema ni recurrir a CompletableFuture.join().
-     */
     public String forwardToReplica(MultipartFile file) {
         try {
             System.out.println("⏳ [INGEST] Reteniendo bloque 2 segundos simulando latencia de red de respaldo...");
             Thread.sleep(2000);
 
-            // Extraemos los bytes del archivo de forma segura en el hilo de entrada
             byte[] fileBytes = file.getBytes();
-            String filename = file.getOriginalFilename();
+            // Garantizamos que nunca sea null para evitar que el multipart pierda la
+            // cabecera Content-Disposition
+            String filename = (file.getOriginalFilename() != null && !file.getOriginalFilename().isBlank())
+                    ? file.getOriginalFilename()
+                    : "block_data.bin";
 
             if (webClients.isEmpty()) {
                 System.out.println("⚠️ [INGEST] No hay nodos de réplica configurados en el clúster.");
@@ -86,38 +84,35 @@ public class MonitoringService {
 
             System.out.println("🚀 [INGEST] Disparando réplicas concurrentemente a " + webClients.size() + " nodos...");
 
-            // 1. Convertimos la lista de WebClients en un Flux de operaciones reactivas
-            // asíncronas
+            // Usamos un Resource con soporte estricto de Multipart
+            ByteArrayResource fileAsResource = new ByteArrayResource(fileBytes) {
+                @Override
+                public String getFilename() {
+                    return filename;
+                }
+            };
+
             reactor.core.publisher.Flux.fromIterable(webClients)
                     .flatMap(client -> {
-                        // Construimos el cuerpo multipart para cada cliente de forma independiente
+                        // Construimos el mapa multipart
                         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-                        body.add("file", new ByteArrayResource(fileBytes) {
-                            @Override
-                            public String getFilename() {
-                                return filename;
-                            }
-                        });
+                        body.add("file", fileAsResource);
 
-                        // Ejecutamos el POST reactivo y capturamos cualquier error individualmente
                         return client.post()
                                 .uri("/api/metrics/replica/receive")
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
-                                .bodyValue(body)
+                                .body(org.springframework.web.reactive.function.BodyInserters.fromMultipartData(body))
                                 .retrieve()
                                 .bodyToMono(String.class)
-                                .doOnSuccess(res -> System.out.println("✅ Bloque enviado con éxito a una réplica."))
+                                .doOnSuccess(res -> System.out
+                                        .println("✅ Bloque enviado con éxito a réplica. Respuesta: " + res))
                                 .onErrorResume(err -> {
                                     System.err.println("❌ Error al replicar en nodo: " + err.getMessage());
-                                    // Evitamos que la caída de un nodo tire abajo el pipeline del resto
                                     return Mono.just("❌ Fallo en nodo");
                                 });
                     })
-                    // 2. Ejecutamos todas las suscripciones de manera concurrente y bloqueamos
-                    // únicamente al final para sincronizar el flujo de la petición REST del
-                    // controlador.
                     .collectList()
-                    .block(); // Bloqueo único y seguro en el punto de salida del hilo HTTP principal
+                    .block();
 
             System.out.println("✅ [INGEST] Sincronización del clúster completada con éxito.");
             return "Sincronización del clúster completada.";
