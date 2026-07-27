@@ -1,2 +1,25 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+# Normalizar todos los archivos de texto a LF automáticamente
+* text=auto eol=lf
+
+# Forzar explícitamente LF en scripts ejecutable, código fuente y configs
+*.sh text eol=lf
+*.bash text eol=lf
+*.yml text eol=yml
+*.yaml text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
+*.properties text eol=lf
+*.env text eol=lf
+*.Dockerfile text eol=lf
+Dockerfile text eol=lf
+
+# Mantener archivos binarios intactos (imágenes, jar, etc.)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.jar binary
+*.pdf binary

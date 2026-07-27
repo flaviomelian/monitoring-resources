@@ -159,3 +159,39 @@ Levantando contenedor en Docker...
 ** The server may need to be upgraded. See https://openssh.com/pq.html
 ee888e6a2bdfe25656c54b608787e58df02d7eb7c835dd244e7badcb70310e11
 ¡Contenedor alpine-replica-6 levantado con éxito en el puerto 8087!
+
+[2026-07-27T11:58:56.503230343] ERROR en scale-up: Cannot run program "tr -d '\r' <": Exec failed, error: 2 (No such file or directory) 
+
+[2026-07-27T12:02:10.601282839] ERROR en scale-up: Cannot run program "tr -d '\r' <": Exec failed, error: 2 (No such file or directory) 
+
+[2026-07-27T12:03:57.477398587] ERROR en scale-up: Timeout (15s): El script 'launch-replica.sh' se quedó bloqueado. Salida parcial:
+/app/scripts/launch-replica.sh: line 2: $'\r': command not found
+/app/scripts/launch-replica.sh: line 8: $'\r': command not found
+cp: cannot stat '/root/.ssh/id_local_ssh'$'\r': No such file or directory
+chmod: cannot access '/tmp/id_local_ssh'$'\r\r': No such file or directory
+/app/scripts/launch-replica.sh: line 12: $'\r': command not found
+/app/scripts/launch-replica.sh: line 15: $'\r': command not found
+Calculando el siguiente índice de réplica...
+/app/scripts/launch-replica.sh: line 17: $'\r': command not found
+/app/scripts/launch-replica.sh: line 20: $'\r': command not found
+/app/scripts/launch-replica.sh: line 26: $'\r': command not found
+/app/scripts/launch-replica.sh: line 27: $'\r': command not found
+
+
+[2026-07-27T12:05:59.820295510] ERROR en scale-up: Timeout (15s): El script 'launch-replica.sh' se quedó bloqueado. Salida parcial:
+cp: cannot stat '/root/.ssh/id_local_ssh'$'\r': No such file or directory
+chmod: cannot access '/tmp/id_local_ssh'$'\r\r': No such file or directory
+Calculando el siguiente índice de réplica...
+/app/scripts/launch-replica.sh: line 20: $'\r': command not found
+/app/scripts/launch-replica.sh: line 21: $'\r': command not found
+
+[2026-07-27T12:06:18.805983846] Scale-up ejecutado con éxito: Calculando el siguiente índice de réplica...
+La última réplica detectada fue la alpine-replica-2.
+Creando alpine-replica-3 en el puerto del Host: 8084...
+Limpiando posibles contenedores con el nombre: monitoring-resources-alpine-replica-3...
+Levantando contenedor en Docker...
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+56e1d69ac44d2e6b3a06e66399d4f56b2288e606129b437a52cd908294328266
+¡Contenedor alpine-replica-3 levantado con éxito en el puerto 8084!

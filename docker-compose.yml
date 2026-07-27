@@ -5,13 +5,13 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: sandbox_db
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_ROOT: root
     ports:
       - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -32,7 +32,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root_password
+      - SPRING_DATASOURCE_PASSWORD=root
       - REPLICA_ONE_URL=http://alpine-replica-1:8080
       - REPLICA_TWO_URL=http://alpine-replica-2:8080
     extra_hosts:
@@ -52,7 +52,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root_password
+      - SPRING_DATASOURCE_PASSWORD=root
       - STORAGE_PATH=/monitored/replica1
     volumes:
       - ./data/replica1:/monitored/replica1:rw
@@ -71,7 +71,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root_password
+      - SPRING_DATASOURCE_PASSWORD=root
       - STORAGE_PATH=/monitored/replica2
     volumes:
       - ./data/replica2:/monitored/replica2:rw

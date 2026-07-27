@@ -46,7 +46,7 @@ case "$ACTION" in
             
             cd "$PROJECT_ROOT" || exit 1
             echo "✅ Frontend iniciado con PID $FRONTEND_PID (Escuchando en http://localhost:3000)."
-            echo "✨ Terminal libre. Usa './run.sh down' para apagar todo el entorno."
+            echo "✨ Terminal libre. Usa './launch-project.sh down' para apagar todo el entorno."
         else
             echo "❌ Error: No existe la ruta frontend"
             exit 1
