@@ -2,6 +2,7 @@ package com.flavio.backend.service;
 
 import com.flavio.backend.model.ResourceMetric;
 import com.flavio.backend.model.ServerNode;
+import com.flavio.backend.repository.MetricAverageProjection;
 import com.flavio.backend.repository.ResourceMetricRepository;
 import com.flavio.backend.repository.ServerNodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,9 @@ public class MonitoringService {
     private ResourceMetricRepository metricRepository;
 
     private ResourceMetric lastSavedMetric = null;
+
+    @Value("${server.port:8081}")
+    private String serverPort;
 
     // 1. Inyectamos las URLs como una lista separada por comas desde el entorno o
     // un fallback
@@ -115,6 +119,7 @@ public class MonitoringService {
                     .block();
 
             System.out.println("✅ [INGEST] Sincronización del clúster completada con éxito.");
+            forceMetricsCollection();
             return "Sincronización del clúster completada.";
 
         } catch (InterruptedException e) {
@@ -146,14 +151,24 @@ public class MonitoringService {
     }
 
     private void forceMetricsCollection() {
-        ServerNode mainNode = nodeRepository.findAll().stream().findFirst().orElseGet(() -> {
-            ServerNode defaultNode = new ServerNode();
-            defaultNode.setName("Servidor Clúster");
-            defaultNode.setIpAddress("127.0.0.1");
-            defaultNode.setOperatingSystem(System.getProperty("os.name"));
-            defaultNode.setActive(true);
-            return nodeRepository.save(defaultNode);
-        });
+        // 1. Identificamos el nodo dinámicamente en lugar de coger siempre el id=1
+        ServerNode currentNode = nodeRepository.findAll().stream()
+                .filter(node -> node.getName() != null && node.getName().contains(serverPort))
+                .findFirst()
+                .orElseGet(() ->
+                // Fallback: busca por IP/puerto o selecciona el primer nodo cuyo ID no sea 1L
+                // si existe
+                nodeRepository.findAll().stream()
+                        .filter(n -> n.getId() != 1L)
+                        .findFirst()
+                        .orElseGet(() -> {
+                            ServerNode defaultNode = new ServerNode();
+                            defaultNode.setName("Servidor Clúster " + serverPort);
+                            defaultNode.setIpAddress("127.0.0.1");
+                            defaultNode.setOperatingSystem(System.getProperty("os.name"));
+                            defaultNode.setActive(true);
+                            return nodeRepository.save(defaultNode);
+                        }));
 
         OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         double cpuUsage = Math.round((osBean.getCpuLoad() * 100) * 100.0) / 100.0;
@@ -182,7 +197,9 @@ public class MonitoringService {
         metric.setRamUsedGB(usedRam);
         metric.setRamTotalGB(Math.round(totalRam * 100.0) / 100.0);
         metric.setDiskUsagePercentage(diskUsagePercentage);
-        metric.setServerNode(mainNode);
+
+        // ✅ Asignamos el nodo dinámico detectado
+        metric.setServerNode(currentNode);
 
         // Mapeamos los directorios reales dinámicos para calcular su tamaño
         long ingestBytes = getFolderSizeInBytes("/monitored/ingest");
@@ -192,7 +209,8 @@ public class MonitoringService {
         metric.setReplicaDiskBytes(replicaBytes);
 
         this.lastSavedMetric = metricRepository.save(metric);
-        System.out.println("📊 [Métricas] Nueva captura guardada. Volumen actual: " + replicaBytes + " bytes.");
+        System.out.println("📊 [Métricas] Nueva captura guardada para el nodo (" + currentNode.getName()
+                + "). Volumen actual: " + replicaBytes + " bytes.");
     }
 
     public long getFolderSizeInBytes(String directoryPath) {
@@ -318,5 +336,12 @@ public class MonitoringService {
         }
         System.out.println("📊 [Métricas] Nueva captura guardada. Volumen actual: " + replicaBytes + " bytes.");
         // Almacenas la métrica con los dos datos balanceados
+    }
+
+    /**
+     * Obtiene el histórico promediado de métricas de todo el clúster
+     */
+    public List<MetricAverageProjection> getClusterAverageMetrics() {
+        return metricRepository.findClusterAverageMetrics();
     }
 }

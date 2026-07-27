@@ -8,24 +8,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ResourceMetricRepository extends JpaRepository<ResourceMetric, Long> {
-    // Recuperar las métricas de un nodo específico ordenadas por tiempo (para las
-    // gráficas)
+
     List<ResourceMetric> findByServerNodeIdOrderByTimestampAsc(Long serverNodeId);
 
-    // Recupera el último registro global insertado en la base de datos basándose en
-    // el tiempo
     Optional<ResourceMetric> findTopByOrderByTimestampDesc();
 
-    // Agrupar por la media de cada timestamp
     @Query(value = "SELECT " +
-            "  timestamp as timestamp, " +
-            "  ROUND(AVG(cpu_usage), 2) as cpuUsage, " +
-            "  ROUND(AVG(ram_used_gb), 2) as ramUsedGb, " +
-            "  ROUND(AVG(disk_usage_percentage), 2) as diskUsagePercentage, " +
-            "  SUM(ingest_disk_bytes) as ingestDiskBytes, " + // La ingesta se suele SUMAR, no promediar
-            "  SUM(replica_disk_bytes) as replicaDiskBytes " +
+            "  MIN(timestamp) AS timestamp, " +
+            "  ROUND(AVG(cpu_usage), 2) AS cpuUsage, " +
+            "  ROUND(AVG(ram_used_gb), 2) AS ramUsedGb, " +
+            "  ROUND(AVG(disk_usage_percentage), 2) AS diskUsagePercentage, " +
+            "  SUM(ingest_disk_bytes) AS ingestDiskBytes, " +
+            "  SUM(replica_disk_bytes) AS replicaDiskBytes " +
             "FROM resource_metrics " +
-            "GROUP BY timestamp " +
-            "ORDER BY timestamp DESC LIMIT 50", nativeQuery = true)
-    List<Object[]> findClusterAverageMetrics();
+            "GROUP BY DATE_FORMAT(timestamp, '%Y-%m-%d %H:%i:%s') " +
+            "ORDER BY timestamp ASC LIMIT 50", nativeQuery = true)
+    List<MetricAverageProjection> findClusterAverageMetrics();
 }

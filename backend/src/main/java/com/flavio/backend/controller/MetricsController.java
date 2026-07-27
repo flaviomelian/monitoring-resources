@@ -1,6 +1,7 @@
 package com.flavio.backend.controller;
 
 import com.flavio.backend.model.ResourceMetric;
+import com.flavio.backend.repository.MetricAverageProjection;
 import com.flavio.backend.repository.ResourceMetricRepository;
 import com.flavio.backend.service.MonitoringService;
 
@@ -20,7 +21,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/metrics")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class MetricsController {
 
     private final ResourceMetricRepository metricRepository;
@@ -88,5 +88,16 @@ public class MetricsController {
         if (!folder.exists()) folder.mkdirs();
         String[] files = folder.list();
         return ResponseEntity.ok(files != null ? Arrays.asList(files) : List.of());
+    }
+
+    /**
+     * ENDPOINT GLOBAL DE MEDIAS
+     * Devuelve un consolidado o la media de métricas de todos los nodos por timestamp
+     */
+    @GetMapping("/history/average")
+    public ResponseEntity<List<MetricAverageProjection>> getClusterAverageHistory() {
+        // Opción limpia: delegar al servicio la agrupación y cálculo de la media por timestamp
+        List<MetricAverageProjection> averageMetrics = monitoringService.getClusterAverageMetrics();
+        return ResponseEntity.ok(averageMetrics);
     }
 }

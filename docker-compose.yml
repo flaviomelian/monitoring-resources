@@ -30,6 +30,7 @@ services:
       - ./backend/scripts/launch-replica.sh:/app/scripts/launch-replica.sh:ro
       - ./logs:/app/logs
     environment:
+      - NODE_NAME=Nodo-Ingest-8081
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
@@ -50,6 +51,7 @@ services:
     ports:
       - "8082:8080"
     environment:
+      - NODE_NAME=Nodo-Replica-8082
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
@@ -69,6 +71,7 @@ services:
     ports:
       - "8083:8080"
     environment:
+      - NODE_NAME=Nodo-Replica-8083
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root

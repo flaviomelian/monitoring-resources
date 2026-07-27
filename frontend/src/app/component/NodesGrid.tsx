@@ -320,7 +320,15 @@ export default function NodesGrid({ latest }: Props) {
                 </div>
               </div>
 
-              <div className="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 h-40 overflow-y-auto space-y-1.5 custom-scrollbar">
+              <div
+                className="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 h-40 overflow-y-auto space-y-1.5 [&::-webkit-scrollbar]:w-1.5
+                [&::-webkit-scrollbar-track]:bg-slate-950/20
+                [&::-webkit-scrollbar-thumb]:bg-slate-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                hover:[&::-webkit-scrollbar-thumb]:bg-slate-700
+                [scrollbar-width:thin]
+                [scrollbar-color:theme(colors.slate.800)_transparent]"
+              >
                 <p className="text-[9px] uppercase font-bold text-slate-500 tracking-wider">
                   Volumen Espejo Activo
                 </p>

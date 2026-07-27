@@ -16,7 +16,7 @@ export default function GlobalMetrics({ latest }: Props) {
           <div>
             <p className="text-slate-400 text-sm font-medium">Uso CPU Global</p>
             <h3 className="text-2xl md:text-3xl font-black mt-1 text-emerald-400">
-              {latest.cpuUsage}%
+              {latest?.cpuUsage ?? 0}%
             </h3>
           </div>
           <Cpu className="text-slate-700 h-15 w-15 stroke-[1.5]" />
@@ -26,7 +26,7 @@ export default function GlobalMetrics({ latest }: Props) {
           <div>
             <p className="text-slate-400 text-sm font-medium">Memoria RAM Host</p>
             <h3 className="text-2xl md:text-3xl font-black mt-1 text-blue-400">
-              {latest.ramUsedGB} / {latest.ramTotalGB} GB
+              {latest?.ramUsedGB ?? 0} / 16 GB
             </h3>
           </div>
           <Server className="text-slate-700 h-20 w-20 stroke-[1.5]" />
@@ -36,7 +36,7 @@ export default function GlobalMetrics({ latest }: Props) {
           <div>
             <p className="text-slate-400 text-sm font-medium">Almacenamiento</p>
             <h3 className="text-2xl md:text-3xl font-black mt-1 text-purple-400">
-              {latest.diskUsagePercentage}%
+              {latest?.diskUsagePercentage ?? 0}%
             </h3>
           </div>
           <HardDrive className="text-slate-700 h-20 w-20 stroke-[1.5]" />

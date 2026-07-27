@@ -12,6 +12,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +25,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cluster")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class ClusterController {
 
     private final ClusterOrchestratorService orchestratorService;
