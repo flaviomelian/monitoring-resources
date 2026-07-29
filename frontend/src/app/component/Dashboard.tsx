@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import Header from "./Header";
 import GlobalMetrics from "./GlobalMetrics";
 import NodesGrid from "./NodesGrid";
 import HistoryChart from "./HistoryChart";
 import MetricsTable from "./MetricsTable";
+import GlobalHistoryChart from "./GlobalHistoryChart";
 import { Metric } from "../types";
 
 export type NodeRole = "all" | "master" | "ingesta" | "replica";
@@ -37,8 +38,9 @@ export default function Dashboard() {
   const [loading, setLoading] = useState<boolean>(true);
   const [avgMetric, setAvgMetric] = useState<Metric[]>([]);
 
+  // useEffect 1 y 2: Nodos y sus métricas individuales en paralelo
   useEffect(() => {
-    const fetchClusterData = async () => {
+    const fetchClusterNodes = async () => {
       try {
         // 1. Obtener la lista de nodos registrados en BD
         const nodesRes = await fetch("http://localhost:8081/api/nodes");
@@ -51,7 +53,7 @@ export default function Dashboard() {
           nodesList.map(async (node) => {
             try {
               const metricsRes = await fetch(
-                `http://localhost:8081/api/metrics/history/${node.id}`,
+                `http://localhost:8081/api/metrics/history/${node.id}`
               );
               const metricsData = metricsRes.ok
                 ? ((await metricsRes.json()) as Metric[])
@@ -60,11 +62,11 @@ export default function Dashboard() {
             } catch (err) {
               console.error(
                 `Error al cargar métricas para nodo ${node.id}:`,
-                err,
+                err
               );
               return { ...node, metrics: [] };
             }
-          }),
+          })
         );
 
         setNodes(nodesWithMetrics);
@@ -74,32 +76,8 @@ export default function Dashboard() {
       }
     };
 
-    fetchClusterData();
-    const interval = setInterval(fetchClusterData, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const fetchAvgMetrics = async () => {
-      try {
-        const res = await fetch("http://localhost:8081/api/metrics/history/average");
-        if (!res.ok) throw new Error(`Error obteniendo media: ${res.status}`);
-        const data = await res.json(); // 👈 1. res.json() con paréntesis y await
-
-        // 2. Inmutabilidad en React: creamos un nuevo array añadiendo el nuevo dato
-        setAvgMetric((prevMetrics) => [...prevMetrics, data]);
-      } catch (error) {
-        console.error("Error extrayendo Media:", error);
-      }
-    };
-
-    // Ejecutar al montar el componente por primera vez
-    fetchAvgMetrics();
-    console.log(avgMetric)
-    // Opcional: Si quieres que refresque cada 5 segundos de forma automática
-    const interval = setInterval(fetchAvgMetrics, 5000);
-
-    // Limpiar el intervalo cuando el componente se desmonte
+    fetchClusterNodes();
+    const interval = setInterval(fetchClusterNodes, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -168,27 +146,11 @@ export default function Dashboard() {
           <div className="flex flex-col gap-6 w-full">
             {/* 1. GRÁFICO PRINCIPAL (MEDIA/GLOBAL): Grande y Destacado Arriba */}
             <div className="bg-slate-900 border border-slate-700/80 p-4 rounded-xl flex flex-col gap-2 w-full shadow-lg shadow-slate-950/40">
-              <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                <span className="text-sm font-semibold text-slate-200">
-                  Vista Global del Clúster{" "}
-                  <span className="text-xs text-purple-400 font-normal ml-2">
-                    (Métrica Promedio / Todos los Nodos)
-                  </span>
-                </span>
-                <span className="text-xs font-mono text-slate-400">
-                  Cluster Aggregated
-                </span>
-              </div>
-              <div className="w-full min-h-100">
-                <HistoryChart
-                  metrics={avgMetric} // 👈 Pasamos el array aplanado con la media global
-                  showAll={showAll}
-                  setShowAll={setShowAll}
-                  activeRole={activeRole}
-                  height="h-[400px]"
-                  compact={false}
-                />
-              </div>
+              <GlobalHistoryChart
+                showAll={showAll}
+                setShowAll={setShowAll}
+                height="h-32"
+              />
             </div>
             {/* 2. RESTO DE NODOS: Lista inferior con scroll y tarjetas más pequeñas */}
             {filteredNodes.length > 0 && (
@@ -220,7 +182,7 @@ export default function Dashboard() {
                       </div>
                       <div className="flex-1 min-h-100">
                         <HistoryChart
-                          metrics={node.metrics} // 👈 Las métricas individuales de cada nodo en su tarjeta
+                          metrics={node.metrics}
                           showAll={showAll}
                           setShowAll={setShowAll}
                           activeRole={activeRole}
@@ -233,7 +195,7 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            <MetricsTable metrics={avgMetric} />
+            <MetricsTable/>
           </div>
         </div>
       </div>

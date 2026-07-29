@@ -221,6 +221,9 @@ export default function NodesGrid({ latest }: Props) {
             <span className="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-black tracking-wide">
               GATEWAY
             </span>
+            <span className="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-black tracking-wide">
+              PORT: 8081
+            </span>
           </div>
 
           <div className="flex justify-between items-end mt-2">

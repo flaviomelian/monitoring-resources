@@ -9,6 +9,19 @@ NETWORK_NAME="monitoring-resources_monitor-net"
 
 echo "🚀 Ejecutando gestión del clúster [Acción: $ACTION]..."
 
+# Comprobar si el demonio de Docker responde
+if ! docker info > /dev/null 2>&1; then
+    echo "⚠️ El demonio de Docker no está activo. Intentando iniciar Docker Desktop..."
+    # Comando para arrancar Docker Desktop desde la terminal de Windows
+    powershell.exe -Command "Start-Process 'C:\Program Files\Docker\Docker\Docker Desktop.exe'"
+    
+    echo "⏳ Esperando a que Docker arranque (esto puede tardar unos segundos)..."
+    until docker info > /dev/null 2>&1; do
+        sleep 3
+    done
+    echo "✅ Docker iniciado correctamente."
+fi
+
 # 1. Asegurar finales de línea Unix (LF) en los scripts
 if [ -d "./scripts" ]; then
     sed -i 's/\r$//' ./scripts/*.sh 2>/dev/null || true

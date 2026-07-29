@@ -15,8 +15,8 @@ interface Props {
   showAll: boolean;
   setShowAll: (v: boolean) => void;
   activeRole: NodeRole;
-  height?: string; // 👈 Prop opcional para controlar la altura (ej: "h-40", "h-48", "h-80")
-  compact?: boolean; // 👈 Opcional para ocultar cabeceras grandes si estás dentro de una tarjeta de lista
+  height?: string; // Prop opcional para controlar la altura (ej: "h-40", "h-48", "h-80")
+  compact?: boolean; // Opcional para ocultar cabeceras grandes si estás dentro de una tarjeta de lista
 }
 
 export default function HistoryChart({
@@ -42,6 +42,24 @@ export default function HistoryChart({
   const showCpuAndRam = activeRole === "all" || activeRole === "master";
   const showIngest = activeRole === "all" || activeRole === "ingesta";
   const showReplica = activeRole === "all" || activeRole === "replica";
+
+  // Cálculo del valor máximo alcanzado según el rol activo para acotar el eje Y de forma inteligente
+  const allValues = activeChartData.flatMap((m) => {
+    const vals: number[] = [];
+    if (activeRole === "all" || activeRole === "master") {
+      vals.push(m.cpuUsage ?? 0, m.ramUsagePercentage ?? 0);
+    }
+    if (activeRole === "all" || activeRole === "ingesta") {
+      vals.push(m.ingestMB ?? 0);
+    }
+    if (activeRole === "all" || activeRole === "replica") {
+      vals.push(m.replicaMB ?? 0);
+    }
+    return vals;
+  });
+
+  const maxReached = allValues.length > 0 ? Math.max(...allValues, 1) : 1;
+  const dynamicDomainMax = Math.ceil(maxReached * 1.1); // Margen del 10% por encima del pico máximo
 
   return (
     <div
@@ -96,11 +114,31 @@ export default function HistoryChart({
               stroke="#64748b"
               tickFormatter={(t) => t.split("T")[1]?.substring(0, 5) || t}
             />
+            {/* Eje Y dinámico adaptado al máximo alcanzado con el tick superior resaltado */}
             <YAxis
               stroke="#64748b"
+              domain={[0, dynamicDomainMax]}
               unit={
                 activeRole === "master" || activeRole === "all" ? "%" : " MB"
               }
+              tick={(props) => {
+                const { x, y, payload } = props;
+                const isMax = payload.value === dynamicDomainMax;
+                return (
+                  <g transform={`translate(${x},${y})`}>
+                    <text
+                      x={-10}
+                      y={4}
+                      fill={isMax ? "#a3c6ff" : "#64748b"}
+                      fontWeight={isMax ? "bold" : "normal"}
+                      fontSize={isMax ? 12 : 11}
+                      textAnchor="end"
+                    >
+                      {payload.value} %
+                    </text>
+                  </g>
+                );
+              }}
             />
             <Tooltip
               contentStyle={{
