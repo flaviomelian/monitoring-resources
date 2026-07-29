@@ -61,6 +61,36 @@ public class MonitoringService {
     @PostConstruct
     public void initWebClients() {
         System.out.println("🔧 [CLUSTER] Inicializando puentes HTTP del sistema de respaldo...");
+
+        // Intentar leer dinámicamente los puertos desde logs/ports.txt usando la
+        // estructura actual del proyecto
+        try {
+            Path portsPath = Paths.get("logs/ports.txt").normalize();
+            if (Files.exists(portsPath)) {
+                List<String> lines = Files.readAllLines(portsPath);
+                List<String> dynamicUrls = new ArrayList<>();
+
+                for (String line : lines) {
+                    String port = line.trim();
+                    if (!port.isBlank() && port.matches("\\d+")) {
+                        dynamicUrls.add("http://localhost:" + port);
+                    }
+                }
+
+                if (!dynamicUrls.isEmpty()) {
+                    this.replicaUrls = dynamicUrls;
+                    System.out.println("📂 [CLUSTER] Puertos de réplica cargados desde ports.txt: " + this.replicaUrls);
+                }
+            } else {
+                System.out.println("⚠️ [CLUSTER] No se encontró ports.txt en " + portsPath.toAbsolutePath()
+                        + ". Usando URLs por defecto.");
+            }
+        } catch (IOException e) {
+            System.err.println(
+                    "❌ [CLUSTER] Error leyendo ports.txt: " + e.getMessage() + ". Usando valores por defecto.");
+        }
+
+        // Construcción de los WebClients con la lista resultante
         for (String url : replicaUrls) {
             if (!url.isBlank()) {
                 System.out.println("🔗 Nodo réplica registrado: " + url.trim());

@@ -177,7 +177,7 @@ export default function Dashboard() {
                           {node.name}
                         </span>
                         <span className="text-[10px] font-mono text-slate-500">
-                          {node.ipAddress}
+                          {node.ipAddress === '127.0.0.1' ? (`${node.ipAddress} | localhost`) : (node.ipAddress)}
                         </span>
                       </div>
                       <div className="flex-1 min-h-100">

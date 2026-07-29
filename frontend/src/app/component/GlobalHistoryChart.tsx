@@ -48,7 +48,7 @@ export default function GlobalHistoryChart({
   }, []);
 
   // Mapeo seguro casteando a any para leer la propiedad tal cual viene de Spring Boot (ramUsedGb)
-  const chartData = (metrics || []).map((rawMetric: any) => {
+  const chartData = (metrics || []).map((rawMetric: unknown) => {
     const m = rawMetric as Metric & { ramUsedGb?: number; ramTotalGb?: number };
     
     const usedGB = m.ramUsedGb ?? m.ramUsedGB ?? 0;
