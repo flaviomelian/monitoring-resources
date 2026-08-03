@@ -57,7 +57,7 @@ export default function MetricsTable() {
               <th className="p-4 font-medium">CPU</th>
               <th className="p-4 font-medium">RAM Host</th>
               <th className="p-4 font-medium">Búfer Ingesta</th>
-              <th className="p-4 font-medium">Almacenamiento (Réplicas A y B)</th>
+              <th className="p-4 font-medium">Almacenamiento</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/60 text-sm">

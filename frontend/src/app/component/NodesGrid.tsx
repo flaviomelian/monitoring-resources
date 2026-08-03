@@ -7,6 +7,7 @@ import {
   Plus,
   Server,
   Loader2,
+  ExternalLink,
 } from "lucide-react";
 import { Metric } from "../types";
 
@@ -70,7 +71,7 @@ export default function NodesGrid({ latest }: Props) {
               port,
               name,
               files,
-              loading: false, // Ya respondió con éxito
+              loading: false,
             } as ReplicaNode;
           }
         } catch (err) {
@@ -267,21 +268,26 @@ export default function NodesGrid({ latest }: Props) {
             </p>
           ) : (
             ingestFiles.map((f, idx) => (
-              <div
+              <a
                 key={idx}
-                className="flex items-center gap-2 text-xs text-slate-400 font-mono py-0.5 border-b border-slate-900/40 last:border-0"
+                href={`http://localhost:8081/api/metrics/file/${f}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between text-xs text-slate-400 font-mono py-1 px-2 rounded hover:bg-slate-900 hover:text-amber-300 transition-colors border-b border-slate-900/40 last:border-0 group"
+                title={`Abrir ${f} en nueva pestaña`}
               >
-                <FileText className="h-3.5 w-3.5 text-amber-500/40 shrink-0" />
-                <span className="truncate" title={f}>
-                  {f}
-                </span>
-              </div>
+                <div className="flex items-center gap-2 truncate">
+                  <FileText className="h-3.5 w-3.5 text-amber-500/40 shrink-0" />
+                  <span className="truncate">{f}</span>
+                </div>
+                <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-amber-400 shrink-0" />
+              </a>
             ))
           )}
         </div>
       </div>
 
-      {/* GRID DINÁMICO DE RÉPLICAS (2 filas x 3 columnas con scroll vertical) */}
+      {/* GRID DINÁMICO DE RÉPLICAS */}
       {activeReplicas.length === 0 ? (
         <div className="bg-slate-900/40 border border-slate-800/50 rounded-xl p-8 text-center">
           <p className="text-slate-500 text-sm italic">
@@ -291,17 +297,14 @@ export default function NodesGrid({ latest }: Props) {
       ) : (
         <div
           className="max-h-190 overflow-y-auto pr-2 py-10
-                  /* Efecto Fade por arriba y por abajo con máscaras CSS */
-                  [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_5%,black_95%,transparent_100%)]
-                  
-                  /* Tus estilos de scroll existentes */
-                  [&::-webkit-scrollbar]:w-1.5
-                  [&::-webkit-scrollbar-track]:bg-slate-950/20
-                  [&::-webkit-scrollbar-thumb]:bg-slate-800
-                  [&::-webkit-scrollbar-thumb]:rounded-full
-                  hover:[&::-webkit-scrollbar-thumb]:bg-slate-700
-                  scrollbar-thin
-                  [scrollbar-color:var(--color-slate-800)_transparent]"
+              [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_5%,black_95%,transparent_100%)]
+              [&::-webkit-scrollbar]:w-1.5
+              [&::-webkit-scrollbar-track]:bg-slate-950/20
+              [&::-webkit-scrollbar-thumb]:bg-slate-800
+              [&::-webkit-scrollbar-thumb]:rounded-full
+              hover:[&::-webkit-scrollbar-thumb]:bg-slate-700
+              scrollbar-thin
+              [scrollbar-color:var(--color-slate-800)_transparent]"
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {activeReplicas.map((replica) => (
@@ -330,7 +333,7 @@ export default function NodesGrid({ latest }: Props) {
                       Espacio Consolidado
                     </p>
                     <p className="text-2xl font-black text-purple-400 font-mono mt-0.5">
-                      {((latest.replicaDiskBytes || 0) / 1048576).toFixed(1)}{" "}
+                      {(latest.replicaDiskBytes).toFixed(1)}{" "}
                       <span className="text-xs font-normal text-slate-400">
                         MB
                       </span>
@@ -358,15 +361,20 @@ export default function NodesGrid({ latest }: Props) {
                     </p>
                   ) : (
                     replica.files.map((f, idx) => (
-                      <div
+                      <a
                         key={idx}
-                        className="flex items-center gap-2 text-xs text-slate-400 font-mono py-0.5 border-b border-slate-900/40 last:border-0"
+                        href={`http://localhost:${replica.port}/api/metrics/file/${f}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between text-xs text-slate-400 font-mono py-1 px-2 rounded hover:bg-slate-900 hover:text-purple-300 transition-colors border-b border-slate-900/40 last:border-0 group"
+                        title={`Abrir ${f} en ${replica.name} (Puerto ${replica.port})`}
                       >
-                        <HardDrive className="h-3.5 w-3.5 text-purple-500/40 shrink-0" />
-                        <span className="truncate" title={f}>
-                          {f}
-                        </span>
-                      </div>
+                        <div className="flex items-center gap-2 truncate">
+                          <HardDrive className="h-3.5 w-3.5 text-purple-500/40 shrink-0" />
+                          <span className="truncate">{f}</span>
+                        </div>
+                        <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-purple-400 shrink-0" />
+                      </a>
                     ))
                   )}
                 </div>
