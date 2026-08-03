@@ -56,9 +56,9 @@ public class BackendApplication {
             // 4. Persistir la entidad en MySQL
             serverNodeRepository.save(node);
 
-            System.out.println("=================================================");
+            System.out.println("===========================================================================");
             System.out.println(">>> NODO REGISTRADO EN BD: " + nodeName + " (" + ipAddress + ") <<<");
-            System.out.println("=================================================");
+            System.out.println("===========================================================================");
         };
     }
 }

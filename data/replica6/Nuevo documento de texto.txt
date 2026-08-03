@@ -1,0 +1,96 @@
+ /*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
+ */
+package salon.habana.salonhabana;
+
+import javafx.application.Application;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+
+import javax.swing.*;
+import javax.swing.text.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import static javafx.application.Application.launch;
+
+/**
+ * FXML Controller class
+ *
+ * @author flavio
+ */
+public class Main extends Application implements Initializable {
+
+    private Tabla tabla;
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXML.fxml"));
+            Parent root = loader.load();
+
+
+            Scene scene = new Scene(root);
+
+
+            primaryStage.setTitle("Salon Habana");
+
+
+            primaryStage.setScene(scene);
+
+
+            primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        this.tabla = new Tabla();
+    }
+
+    public void addRow(String data){
+        View view = new View((Element) new Text(data)) {
+            @Override
+            public float getPreferredSpan(int axis) {
+                return 0;
+            }
+
+            @Override
+            public void paint(Graphics g, Shape allocation) {
+
+            }
+
+            @Override
+            public Shape modelToView(int pos, Shape a, Position.Bias b) throws BadLocationException {
+                return null;
+            }
+
+            @Override
+            public int viewToModel(float x, float y, Shape a, Position.Bias[] biasReturn) {
+                return 0;
+            }
+        };
+        ((TableView)this.tabla).append(view);
+    }
+
+    @FXML
+    private void handleButtonAction(ActionEvent e){
+        try{
+            new FormularioController().start(new Stage());
+        }catch(Exception ex){
+            System.err.println("HA OCURRIDO UN PROBLEMA EN LA APERTURA DEL FORMULARIO");
+        }
+    }
+}

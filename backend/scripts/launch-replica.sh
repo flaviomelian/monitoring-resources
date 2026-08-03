@@ -28,7 +28,7 @@ NUEVA_REPLICA="alpine-replica-${NUEVO_NUM}"
 RED_DOCKER="monitoring-resources_monitor-net" 
 NUEVO_PUERTO=$((8081 + NUEVO_NUM))
 # RUTA DE WINDOWS ADAPTADA PARA WSL: /mnt/c/... en lugar de /c/...
-VOLUMEN_HOST_WSL="/mnt/c/Users/Flavio/tu-proyecto/data/replica${NUEVO_NUM}" 
+VOLUMEN_HOST_WSL="/mnt/c/Users/Flavio/Desktop/GH-Projects/monitoring-resources/data/replica${NUEVO_NUM}" 
 echo "La última réplica detectada fue la alpine-replica-${ULTIMO_NUM:-2}."
 echo "Creando ${NUEVA_REPLICA} en el puerto del Host: ${NUEVO_PUERTO}..."
 # Crear directorio en la máquina Windows mediante WSL

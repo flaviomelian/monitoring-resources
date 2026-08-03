@@ -70,10 +70,19 @@ public class MonitoringService {
                 List<String> lines = Files.readAllLines(portsPath);
                 List<String> dynamicUrls = new ArrayList<>();
 
+                int index = 1;
                 for (String line : lines) {
                     String port = line.trim();
                     if (!port.isBlank() && port.matches("\\d+")) {
-                        dynamicUrls.add("http://localhost:" + port);
+                        // Dependiendo de cómo los levante tu orquestador:
+                        // Si el primero y segundo son "alpine-replica-X" y los siguientes
+                        // "monitoring-resources-alpine-replica-Y":
+                        String containerName = (index <= 2)
+                                ? "alpine-replica-" + index
+                                : "monitoring-resources-alpine-replica-" + index;
+
+                        dynamicUrls.add("http://" + containerName + ":8080");
+                        index++;
                     }
                 }
 

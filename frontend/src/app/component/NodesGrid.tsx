@@ -6,6 +6,7 @@ import {
   HardDrive,
   Plus,
   Server,
+  Loader2,
 } from "lucide-react";
 import { Metric } from "../types";
 
@@ -17,6 +18,7 @@ interface ReplicaNode {
   port: number;
   name: string;
   files: string[];
+  loading: boolean;
 }
 
 export default function NodesGrid({ latest }: Props) {
@@ -43,14 +45,15 @@ export default function NodesGrid({ latest }: Props) {
 
       const nodeUrls: string[] = resNodes?.ok ? await resNodes.json() : [];
 
-      // 3. Consultar dinámicamente CADA URL devuelta sin tumbar la UI si un nodo aún no responde
+      // 3. Consultar dinámicamente CADA URL y manejar su estado de carga individual
       const replicaPromises = nodeUrls.map(async (baseUrl, index) => {
+        const port = parseInt(baseUrl.split(":").pop() || "8082", 10);
+        const name = `alpine-replica-${index + 1}`;
+
         try {
-          // Le metemos un timeout propio para que si el nodo está arrancando no se quede colgado 15s
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-          // Si viene un signal global de desmontaje de React, abortamos también
           if (signal) {
             signal.addEventListener("abort", () => controller.abort());
           }
@@ -63,18 +66,20 @@ export default function NodesGrid({ latest }: Props) {
 
           if (res.ok) {
             const files = await res.json();
-            const port = parseInt(baseUrl.split(":").pop() || "8082", 10);
-
             return {
               port,
-              name: `alpine-replica-${index + 1}`,
+              name,
               files,
+              loading: false, // Ya respondió con éxito
             } as ReplicaNode;
           }
         } catch (err) {
-          // Silenciamos el error por consola cuando el nodo está naciendo o no responde.
-          // Simplemente retornamos null para que la réplica no aparezca activa aún.
-          return null;
+          return {
+            port,
+            name,
+            files: [],
+            loading: true,
+          } as ReplicaNode;
         }
         return null;
       });
@@ -88,7 +93,6 @@ export default function NodesGrid({ latest }: Props) {
       setActiveReplicas(detectedReplicas);
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") {
-        // Solo logueamos errores catastróficos del cliente principal
         console.warn("Aviso al consultar el clúster:", err.message);
       }
     }
@@ -277,7 +281,7 @@ export default function NodesGrid({ latest }: Props) {
         </div>
       </div>
 
-      {/* GRID DINÁMICO DE RÉPLICAS */}
+      {/* GRID DINÁMICO DE RÉPLICAS (2 filas x 3 columnas con scroll vertical) */}
       {activeReplicas.length === 0 ? (
         <div className="bg-slate-900/40 border border-slate-800/50 rounded-xl p-8 text-center">
           <p className="text-slate-500 text-sm italic">
@@ -286,75 +290,89 @@ export default function NodesGrid({ latest }: Props) {
         </div>
       ) : (
         <div
-          className={`grid grid-cols-1 gap-6 ${
-            activeReplicas.length === 1
-              ? "md:grid-cols-1 max-w-md mx-auto"
-              : activeReplicas.length === 2
-                ? "md:grid-cols-2 max-w-4xl"
-                : "md:grid-cols-2 lg:grid-cols-3"
-          }`}
+          className="max-h-190 overflow-y-auto pr-2 py-10
+                  /* Efecto Fade por arriba y por abajo con máscaras CSS */
+                  [-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_5%,black_95%,transparent_100%)]
+                  
+                  /* Tus estilos de scroll existentes */
+                  [&::-webkit-scrollbar]:w-1.5
+                  [&::-webkit-scrollbar-track]:bg-slate-950/20
+                  [&::-webkit-scrollbar-thumb]:bg-slate-800
+                  [&::-webkit-scrollbar-thumb]:rounded-full
+                  hover:[&::-webkit-scrollbar-thumb]:bg-slate-700
+                  scrollbar-thin
+                  [scrollbar-color:var(--color-slate-800)_transparent]"
         >
-          {activeReplicas.map((replica) => (
-            <div
-              key={replica.port}
-              className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4 relative overflow-hidden transition-all duration-300 hover:border-slate-700"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
-              <div>
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
-                  <span className="font-bold text-sm tracking-tight text-slate-200 font-mono flex items-center gap-2">
-                    <Server className="h-4 w-4 text-purple-500/60" />
-                    {replica.name}
-                  </span>
-                  <span className="text-[9px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded font-black tracking-wide">
-                    PORT: {replica.port}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">
-                    Espacio Consolidado
-                  </p>
-                  <p className="text-2xl font-black text-purple-400 font-mono mt-0.5">
-                    {((latest.replicaDiskBytes || 0) / 1048576).toFixed(1)}{" "}
-                    <span className="text-xs font-normal text-slate-400">
-                      MB
-                    </span>
-                  </p>
-                </div>
-              </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {activeReplicas.map((replica) => (
               <div
-                className="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 h-40 overflow-y-auto space-y-1.5 [&::-webkit-scrollbar]:w-1.5
-                [&::-webkit-scrollbar-track]:bg-slate-950/20
-                [&::-webkit-scrollbar-thumb]:bg-slate-800
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                hover:[&::-webkit-scrollbar-thumb]:bg-slate-700
-                [scrollbar-width:thin]
-                [scrollbar-color:theme(colors.slate.800)_transparent]"
+                key={replica.port}
+                className="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4 relative overflow-hidden transition-all duration-300 hover:border-slate-700"
               >
-                <p className="text-[9px] uppercase font-bold text-slate-500 tracking-wider">
-                  Volumen Espejo Activo
-                </p>
-                {replica.files.length === 0 ? (
-                  <p className="text-slate-600 text-xs italic pt-2">
-                    Esperando asignación de bloques.
-                  </p>
-                ) : (
-                  replica.files.map((f, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-2 text-xs text-slate-400 font-mono py-0.5 border-b border-slate-900/40 last:border-0"
-                    >
-                      <HardDrive className="h-3.5 w-3.5 text-purple-500/40 shrink-0" />
-                      <span className="truncate" title={f}>
-                        {f}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl pointer-events-none" />
+                <div>
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+                    <span className="font-bold text-sm tracking-tight text-slate-200 font-mono flex items-center gap-2">
+                      <Server className="h-4 w-4 text-purple-500/60" />
+                      {replica.name}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {replica.loading && (
+                        <Loader2 className="h-3.5 w-3.5 text-purple-400 animate-spin" />
+                      )}
+                      <span className="text-[9px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded font-black tracking-wide">
+                        PORT: {replica.port}
                       </span>
                     </div>
-                  ))
-                )}
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">
+                      Espacio Consolidado
+                    </p>
+                    <p className="text-2xl font-black text-purple-400 font-mono mt-0.5">
+                      {((latest.replicaDiskBytes || 0) / 1048576).toFixed(1)}{" "}
+                      <span className="text-xs font-normal text-slate-400">
+                        MB
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 h-40 overflow-y-auto space-y-1.5 [&::-webkit-scrollbar]:w-1.5
+                  [&::-webkit-scrollbar-track]:bg-slate-950/20
+                  [&::-webkit-scrollbar-thumb]:bg-slate-800
+                  [&::-webkit-scrollbar-thumb]:rounded-full
+                  hover:[&::-webkit-scrollbar-thumb]:bg-slate-700
+                  [scrollbar-width:thin]
+                  [scrollbar-color:theme(colors.slate.800)_transparent]"
+                >
+                  <p className="text-[9px] uppercase font-bold text-slate-500 tracking-wider">
+                    Volumen Espejo Activo
+                  </p>
+                  {replica.files.length === 0 ? (
+                    <p className="text-slate-600 text-xs italic pt-2">
+                      {replica.loading
+                        ? "Iniciando contenedor..."
+                        : "Esperando asignación de bloques."}
+                    </p>
+                  ) : (
+                    replica.files.map((f, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-2 text-xs text-slate-400 font-mono py-0.5 border-b border-slate-900/40 last:border-0"
+                      >
+                        <HardDrive className="h-3.5 w-3.5 text-purple-500/40 shrink-0" />
+                        <span className="truncate" title={f}>
+                          {f}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
     </section>
