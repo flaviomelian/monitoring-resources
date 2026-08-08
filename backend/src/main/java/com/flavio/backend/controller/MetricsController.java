@@ -5,8 +5,11 @@ import com.flavio.backend.repository.MetricAverageProjection;
 import com.flavio.backend.repository.ResourceMetricRepository;
 import com.flavio.backend.service.MonitoringService;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -85,18 +88,37 @@ public class MetricsController {
     public ResponseEntity<List<String>> getReplicaFiles() {
         // Usamos la variable inyectada para que cada réplica liste su propia carpeta
         File folder = new File(storagePath);
-        if (!folder.exists()) folder.mkdirs();
+        if (!folder.exists())
+            folder.mkdirs();
         String[] files = folder.list();
         return ResponseEntity.ok(files != null ? Arrays.asList(files) : List.of());
     }
 
+    @GetMapping("/file/{filename:.+}")
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+        // 1. Construye la ruta donde sabes que están los archivos
+        // Ojo: Ajusta la ruta base según el contenedor, ej: "/monitored/replicaX/"
+        Path filePath = Paths.get("/monitored/replica3").resolve(filename);
+        Resource resource = new FileSystemResource(filePath.toFile());
+
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                .body(resource);
+    }
+
     /**
      * ENDPOINT GLOBAL DE MEDIAS
-     * Devuelve un consolidado o la media de métricas de todos los nodos por timestamp
+     * Devuelve un consolidado o la media de métricas de todos los nodos por
+     * timestamp
      */
     @GetMapping("/history/average")
     public ResponseEntity<List<MetricAverageProjection>> getClusterAverageHistory() {
-        // Opción limpia: delegar al servicio la agrupación y cálculo de la media por timestamp
+        // Opción limpia: delegar al servicio la agrupación y cálculo de la media por
+        // timestamp
         List<MetricAverageProjection> averageMetrics = monitoringService.getClusterAverageMetrics();
         return ResponseEntity.ok(averageMetrics);
     }

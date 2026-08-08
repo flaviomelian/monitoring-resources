@@ -8,8 +8,10 @@ import {
   Server,
   Loader2,
   ExternalLink,
+  Terminal,
 } from "lucide-react";
 import { Metric } from "../types";
+import { NodeTerminalModal } from "./NodeTerminalModal";
 
 interface Props {
   latest: Metric;
@@ -328,16 +330,21 @@ export default function NodesGrid({ latest }: Props) {
                       </span>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">
-                      Espacio Consolidado
-                    </p>
-                    <p className="text-2xl font-black text-purple-400 font-mono mt-0.5">
-                      {(latest.replicaDiskBytes).toFixed(1)}{" "}
-                      <span className="text-xs font-normal text-slate-400">
-                        MB
-                      </span>
-                    </p>
+                  <div className="flex flex-row justify-between">
+                    <div>
+                      <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">
+                        Espacio Consolidado
+                      </p>
+                      <p className="text-2xl font-black text-purple-400 font-mono mt-0.5">
+                        {latest.replicaDiskBytes.toFixed(1)}{" "}
+                        <span className="text-xs font-normal text-slate-400">
+                          MB
+                        </span>
+                      </p>
+                    </div>
+                    <div >
+                      <NodeTerminalModal nodeName={replica.name} port={replica.port}/>
+                    </div>
                   </div>
                 </div>
 
