@@ -24,7 +24,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/**", "/api/nodes", "/api/nodes/**", "/terminal", "/terminal/**", "/error").permitAll()
+                        .requestMatchers("/api/**", "/api/nodes", "/api/nodes/**", "/api/auth/**", "/terminal", "/terminal/**", "/error").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
@@ -33,7 +33,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of(    // Lista de acceso
+            "http://localhost:3000",                // DESPACHO
+            "http://100.127.21.61:3000",
+            "http://despacho-desktop-3basi77.tail645042.ts.net:3000",
+            "http://100.111.242.112:3000",          // AARON
+            "http://aaron-desktop.tail645042.ts.net:3000",
+            "http://100.85.96.18:3000",             // PORTATIL
+            "http://flavio-portatil.tail645042.ts.net:3000",
+            "http://100.90.26.6:3000",              // MOVIL
+            "http://flavio-xiaomi-15.tail645042.ts.net:3000"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

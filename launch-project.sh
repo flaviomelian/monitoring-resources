@@ -22,7 +22,7 @@ case "$ACTION" in
             cd backend/scripts || exit 1
             chmod +x launch-cluster.sh 2>/dev/null || true
             ./launch-cluster.sh up
-            
+
             # Volver a la raíz
             cd "$PROJECT_ROOT" || exit 1
         else
@@ -34,18 +34,18 @@ case "$ACTION" in
         echo "⏳ Esperando ${FRONTEND_WAIT_TIME}s para que los servicios base se estabilicen..."
         sleep "$FRONTEND_WAIT_TIME"
 
-        # 3. Arrancar Frontend en segundo plano (desacoplado)
+        # 3. Arrancar Frontend en segundo plano (desacoplado y escuchando en 0.0.0.0)
         echo "💻 Lanzando servidor de desarrollo de Frontend en segundo plano..."
         if [ -d "frontend" ]; then
             cd frontend || exit 1
-            
-            # Se lanza en background sin bloquear stdout/stderr y se guarda su PID
-            nohup npm run dev > /dev/null 2>&1 &
+
+            # Se lanza en background guardando el log para depuración y abriendo el binding a la red
+            nohup npx next dev -H 0.0.0.0 > "$PROJECT_ROOT/.frontend.log" 2>&1 &
             FRONTEND_PID=$!
             echo "$FRONTEND_PID" > "$PID_FILE"
-            
+
             cd "$PROJECT_ROOT" || exit 1
-            echo "✅ Frontend iniciado con PID $FRONTEND_PID (Escuchando en http://localhost:3000)."
+            echo "✅ Frontend iniciado con PID $FRONTEND_PID (Escuchando en http://0.0.0.0:3000)."
             echo "✨ Terminal libre. Usa './launch-project.sh down' para apagar todo el entorno."
         else
             echo "❌ Error: No existe la ruta frontend"
@@ -58,12 +58,12 @@ case "$ACTION" in
 
         # 1. Tumbar proceso de Frontend y sus hijos
         echo "💻 Deteniendo el servidor Frontend (Next.js)..."
-        
+
         # Eliminación por PID guardado y su árbol de hijos (pkill -P)
         if [ -f "$PID_FILE" ]; then
             SAVED_PID=$(cat "$PID_FILE")
             if [ -n "$SAVED_PID" ]; then
-                # Mata los procesos hijos generados por npm
+                # Mata los procesos hijos generados por Node/Next
                 pkill -P "$SAVED_PID" 2>/dev/null || true
                 kill -9 "$SAVED_PID" 2>/dev/null || true
             fi
@@ -88,6 +88,7 @@ case "$ACTION" in
 
         # Barrido de seguridad sobre ejecutables comunes de dev
         pkill -f "next dev" 2>/dev/null || pkill -f "next-server" 2>/dev/null || true
+        rm -f "$PROJECT_ROOT/.frontend.log"
         echo "✅ Frontend detenido correctamente."
 
         # 2. Parar Backend delegando en su propio script
@@ -96,7 +97,7 @@ case "$ACTION" in
             cd backend/scripts || exit 1
             chmod +x launch-cluster.sh 2>/dev/null || true
             ./launch-cluster.sh down
-            
+
             cd "$PROJECT_ROOT" || exit 1
             echo "✅ Entorno detenido completamente."
         else
@@ -109,7 +110,7 @@ case "$ACTION" in
         echo "❌ Uso no válido."
         echo "Sintaxis: ./run.sh [up|down]"
         echo "  - Sin parámetros / 'up' : Levanta backend y frontend en segundo plano"
-        echo "  - 'down'               : Apaga la infraestructura del backend y del frontend"
+        echo "  - 'down'                : Apaga la infraestructura del backend y del frontend"
         exit 1
         ;;
 esac

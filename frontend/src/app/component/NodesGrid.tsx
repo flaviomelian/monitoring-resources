@@ -34,7 +34,7 @@ export default function NodesGrid({ latest }: Props) {
     try {
       // 1. Obtener archivos del nodo de ingesta principal
       const resIngest = await fetch(
-        "http://localhost:8081/api/metrics/ingest/files",
+        "http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/metrics/ingest/files",
         { signal },
       ).catch(() => null);
 
@@ -42,7 +42,7 @@ export default function NodesGrid({ latest }: Props) {
       setIngestFiles(dataIngest);
 
       // 2. Pedir al backend las URLs de los nodos registrados
-      const resNodes = await fetch("http://localhost:8081/api/cluster/nodes", {
+      const resNodes = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/cluster/nodes", {
         signal,
       }).catch(() => null);
 
@@ -130,7 +130,7 @@ export default function NodesGrid({ latest }: Props) {
     setUploading(true);
     try {
       const res = await fetch(
-        "http://localhost:8081/api/metrics/ingest/upload",
+        "http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/metrics/ingest/upload",
         {
           method: "POST",
           body: formData,
@@ -257,6 +257,9 @@ export default function NodesGrid({ latest }: Props) {
                 className="hidden"
               />
             </label>
+            <div>
+              <NodeTerminalModal nodeName="alpine-ingest-app-gateway" port={8081} color={'orange'}/>
+            </div>
           </div>
         </div>
 
@@ -342,8 +345,12 @@ export default function NodesGrid({ latest }: Props) {
                         </span>
                       </p>
                     </div>
-                    <div >
-                      <NodeTerminalModal nodeName={replica.name} port={replica.port}/>
+                    <div>
+                      <NodeTerminalModal
+                        nodeName={replica.name}
+                        port={replica.port}
+                        color={'purple'}
+                      />
                     </div>
                   </div>
                 </div>
@@ -370,7 +377,7 @@ export default function NodesGrid({ latest }: Props) {
                     replica.files.map((f, idx) => (
                       <a
                         key={idx}
-                        href={`http://localhost:${replica.port}/api/metrics/file/${f}`}
+                        href={`http://despacho-desktop-3basi77.tail645042.ts.net:${replica.port}/api/metrics/file/${f}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-between text-xs text-slate-400 font-mono py-1 px-2 rounded hover:bg-slate-900 hover:text-purple-300 transition-colors border-b border-slate-900/40 last:border-0 group"

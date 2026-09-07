@@ -14,19 +14,23 @@ const TerminalComponent = dynamic(
 interface Props {
   nodeName: string;
   port: number;
+  color: string;
 }
 
-export function NodeTerminalModal({ nodeName, port }: Props) {
+export function NodeTerminalModal({ nodeName, port, color }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const modalContent = isOpen ? (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-[99999] p-4">
-      <div className="bg-zinc-900 border border-purple-500/50 rounded-xl w-full max-w-3xl h-[480px] shadow-[0_0_25px_rgba(192,132,252,0.15)] flex flex-col overflow-hidden">
+      <div 
+        className="bg-zinc-900 rounded-xl w-full max-w-3xl h-[480px] flex flex-col overflow-hidden shadow-2xl"
+        style={{ borderColor: `${color}80`, borderWidth: '1px', borderStyle: 'solid', boxShadow: `0 0 25px ${color}26` }}
+      >
         
         {/* Barra superior */}
         <div className="bg-black/80 px-4 py-3 border-b border-zinc-800 flex items-center justify-between select-none">
           <div className="flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-purple-400" />
+            <Terminal className="w-4 h-4" style={{ color }} />
             <span className="text-xs font-mono text-zinc-300">
               terminal@{nodeName} (Port: {port})
             </span>
@@ -52,10 +56,16 @@ export function NodeTerminalModal({ nodeName, port }: Props) {
     <div>
       <button
         onClick={() => setIsOpen(true)}
-        className="bg-black p-2 rounded-md group border border-black hover:border-purple-500 hover:drop-shadow-[0_0_8px_rgba(192,132,252,0.8)] transition-all duration-200"
+        className="bg-black p-2 rounded-md group border border-black transition-all duration-200"
+        onMouseEnter={(e) => (e.currentTarget.style.borderColor = color)}
+        onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'transparent')}
         title={`Abrir terminal para ${nodeName}`}
       >
-        <Terminal className="w-6 h-6 text-gray-400 hover:text-purple-400 transition-colors" />
+        <Terminal 
+          className="w-6 h-6 text-gray-400 transition-colors group-hover:opacity-100" 
+          onMouseEnter={(e) => (e.currentTarget.style.color = color)}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '')}
+        />
       </button>
 
       {isOpen && ReactDOM.createPortal(modalContent, document.body)}

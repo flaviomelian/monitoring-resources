@@ -10,7 +10,7 @@ export default function MetricsTable() {
     const fetchAverageMetrics = async () => {
       try {
         const avgMetricsRes = await fetch(
-          "http://localhost:8081/api/metrics/history/average"
+          "http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/metrics/history/average"
         );
         if (avgMetricsRes.ok) {
           const avgData = (await avgMetricsRes.json()) as Metric[];

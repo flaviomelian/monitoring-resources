@@ -32,7 +32,7 @@ export const TerminalComponent = ({ nodeId }: { nodeId: number }) => {
       term.open(terminalRef.current);
       termInstance.current = term;
 
-      const wsUrl = `ws://localhost:${nodeId}/terminal`;
+      const wsUrl = `ws://http://despacho-desktop-3basi77.tail645042.ts.net:${nodeId}/terminal`;
       const ws = new WebSocket(wsUrl);
       wsInstance.current = ws;
 
@@ -113,7 +113,7 @@ export const TerminalComponent = ({ nodeId }: { nodeId: number }) => {
         if (data === "\r" || data === "\n") {
           term.write("\r\n");
           ws.send("\n");
-          ws.send("echo \"|||PWD_RESP:$(pwd)|||\"\n");
+          ws.send('echo "|||PWD_RESP:$(pwd)|||"\n');
           currentCommand = "";
           return;
         }
@@ -142,7 +142,7 @@ export const TerminalComponent = ({ nodeId }: { nodeId: number }) => {
   return (
     <div
       ref={terminalRef}
-      className="h-full w-full min-h-[350px] overflow-hidden"
+      className="h-full w-full min-h-[350px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[#09090b] [&::-webkit-scrollbar-thumb]:bg-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
     />
   );
 };

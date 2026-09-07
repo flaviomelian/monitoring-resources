@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DockStream</string>
+    <string name="title_activity_main">DockStream</string>
+    <string name="package_name">com.flavio.dockstream</string>
+    <string name="custom_url_scheme">com.flavio.dockstream</string>
+</resources>
