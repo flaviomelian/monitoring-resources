@@ -29,6 +29,7 @@ services:
       - ~/.ssh/id_local_ssh:/root/.ssh/id_local_ssh:ro
       - ./backend/scripts/launch-replica.sh:/app/scripts/launch-replica.sh:ro
       - ./logs:/app/logs
+      - ./uploads:/app/uploads
     environment:
       - NODE_NAME=Nodo-Ingest-8081
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true

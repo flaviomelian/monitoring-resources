@@ -53,7 +53,7 @@ public class ApiController {
 
     // Endpoint exclusivo para Administradores: Gestionar / Crear contenedores
     @PostMapping("/admin/containers")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> manageContainers(@RequestBody ContainerActionRequest request) {
         // Lógica de Docker API para crear/administrar contenedores
         return ResponseEntity.ok("Contenedor gestionado correctamente por el Administrador.");
@@ -62,7 +62,7 @@ public class ApiController {
     // Endpoint accesible por usuarios estándar y administradores: Consumir
     // servicios
     @GetMapping("/containers/consume")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<String> consumeContainers() {
         return ResponseEntity.ok("Acceso concedido al consumo de servicios y métricas.");
     }

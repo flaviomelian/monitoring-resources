@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { Plus, Trash2, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Plus, Trash2 } from "lucide-react";
 import Header from "./Header";
 
 interface Task {
-  id: string;
+  id: number;
   title: string;
   status: "todo" | "in_progress" | "done";
   priority: "low" | "medium" | "high";
@@ -13,56 +13,94 @@ interface Task {
 }
 
 const Kanban = () => {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      title: "Auditoría de seguridad en clúster Kubernetes",
-      status: "in_progress",
-      priority: "high",
-      tag: "DevOps",
-    },
-    {
-      id: "2",
-      title: "Optimizar consultas SQL en PostgreSQL",
-      status: "todo",
-      priority: "medium",
-      tag: "Database",
-    },
-    {
-      id: "3",
-      title: "Configurar métricas en Prometheus y Grafana",
-      status: "done",
-      priority: "high",
-      tag: "Monitor",
-    },
-  ]);
-
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
-  const [tag, setTag] = useState("DevOps");
+  const [tag, setTag] = useState("");
   const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
 
-  const handleAddTask = (e: React.FormEvent) => {
+  const fetchTasks = async () => {
+    try {
+      const res = await fetch("http://localhost:8081/api/tasks");
+      if (res.ok) {
+        const data = await res.json();
+        setTasks(data);
+      }
+    } catch (e) {
+      console.error("Error al cargar las tareas del backend", e);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const newTask: Task = {
-      id: Date.now().toString(),
-      title,
+    const newTask = {
+      title: title.trim(),
       status: "todo",
-      priority,
-      tag,
+      priority: priority,
+      tag: tag || "General",
     };
 
-    setTasks([newTask, ...tasks]);
-    setTitle("");
+    try {
+      const res = await fetch("http://localhost:8081/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTask),
+      });
+
+      if (res.ok) {
+        const created = await res.json();
+        setTasks([created, ...tasks]);
+        setTitle("");
+        setTag("");
+        setPriority("medium");
+      } else {
+        const errorText = await res.text();
+        console.error("Error del servidor:", errorText);
+      }
+    } catch (error) {
+      console.error("Error de red al crear la tarea", error);
+    }
   };
 
-  const moveTask = (id: string, newStatus: "todo" | "in_progress" | "done") => {
-    setTasks(tasks.map((t) => (t.id === id ? { ...t, status: newStatus } : t)));
+  const moveTask = async (
+    id: number,
+    newStatus: "todo" | "in_progress" | "done",
+  ) => {
+    try {
+      const res = await fetch(
+        `${"http://localhost:8081/api/tasks"}/${id}/status?status=${newStatus}`,
+        {
+          method: "PATCH",
+        },
+      );
+
+      if (res.ok) {
+        setTasks(
+          tasks.map((t) => (t.id === id ? { ...t, status: newStatus } : t)),
+        );
+      }
+    } catch (error) {
+      console.error("Error al mover la tarea", error);
+    }
   };
 
-  const deleteTask = (id: string) => {
-    setTasks(tasks.filter((t) => t.id !== id));
+  const deleteTask = async (id: number) => {
+    try {
+      const res = await fetch(`${"http://localhost:8081/api/tasks"}/${id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setTasks(tasks.filter((t) => t.id !== id));
+      }
+    } catch (error) {
+      console.error("Error al realizar el borrado lógico", error);
+    }
   };
 
   const columns = [
@@ -76,8 +114,7 @@ const Kanban = () => {
       <div className="p-8">
         <Header />
       </div>
-      <div className="space-y-6">
-        {/* Formulario para añadir tareas */}
+      <div className="space-y-6 px-8 pb-8">
         <form
           onSubmit={handleAddTask}
           className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row gap-3 items-center"
@@ -94,6 +131,7 @@ const Kanban = () => {
             onChange={(e) => setTag(e.target.value)}
             className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
           >
+            <option value="">Seleccione una opción</option>
             <option value="DevOps">DevOps</option>
             <option value="Backend">Backend</option>
             <option value="Database">Database</option>
@@ -111,14 +149,13 @@ const Kanban = () => {
           </select>
           <button
             type="submit"
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 w-full md:w-auto justify-center"
+            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 w-full md:w-auto justify-center cursor-pointer"
           >
             <Plus size={16} />
             <span>Añadir</span>
           </button>
         </form>
 
-        {/* Columnas del Kanban */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {columns.map((col) => {
             const colTasks = tasks.filter((t) => t.status === col.id);
@@ -178,7 +215,7 @@ const Kanban = () => {
                                   col.id === "done" ? "in_progress" : "todo",
                                 )
                               }
-                              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-[11px]"
+                              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-[11px] cursor-pointer"
                             >
                               &larr; Mover
                             </button>
@@ -191,7 +228,7 @@ const Kanban = () => {
                                   col.id === "todo" ? "in_progress" : "done",
                                 )
                               }
-                              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-[11px] ml-auto"
+                              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition text-[11px] ml-auto cursor-pointer"
                             >
                               Mover &rarr;
                             </button>
@@ -199,7 +236,7 @@ const Kanban = () => {
                         </div>
                         <button
                           onClick={() => deleteTask(task.id)}
-                          className="p-1 text-slate-500 hover:text-red-400 transition ml-auto"
+                          className="p-1 text-slate-500 hover:text-red-400 transition ml-auto cursor-pointer"
                           title="Eliminar"
                         >
                           <Trash2 size={14} />
