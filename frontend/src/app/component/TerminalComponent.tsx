@@ -8,7 +8,9 @@ export const TerminalComponent = ({ nodeId }: { nodeId: number }) => {
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const termInstance = useRef<Terminal | null>(null);
   const wsInstance = useRef<WebSocket | null>(null);
-  const [pwd, setPwd] = useState("\\");
+  const [pwd, setPwd] = useState("/app");
+  
+  const pwdRef = useRef("/app");
 
   useEffect(() => {
     let isMounted = true;
@@ -32,20 +34,116 @@ export const TerminalComponent = ({ nodeId }: { nodeId: number }) => {
       term.open(terminalRef.current);
       termInstance.current = term;
 
-      const wsUrl = `ws://http://despacho-desktop-3basi77.tail645042.ts.net:${nodeId}/terminal`;
+      const wsUrl = `ws://despacho-desktop-3basi77.tail645042.ts.net:${nodeId}/terminal`;
       const ws = new WebSocket(wsUrl);
       wsInstance.current = ws;
 
+      const linuxCommands = new Set([
+        "ls", "cd", "pwd", "mkdir", "rm", "cp", "mv", "cat", "grep",
+        "find", "chmod", "chown", "ps", "top", "kill", "df", "du",
+        "tar", "zip", "unzip", "curl", "wget", "ssh", "scp", "git",
+        "docker", "docker-compose", "systemctl", "journalctl", "nano",
+        "vim", "clear", "cls", "apk"
+      ]);
+
       let currentCommand = "";
+
+      const renderPrompt = (typingCommand: string = "") => {
+        const currentPath = pwdRef.current;
+        const parts = typingCommand.trim().split(/\s+/);
+        const baseCmd = parts[0] || "";
+        const args = typingCommand.slice(baseCmd.length);
+
+        const isKnown = linuxCommands.has(baseCmd);
+        const coloredCmd = isKnown
+          ? `\x1b[38;5;214m${baseCmd}\x1b[0m${args}`
+          : `\x1b[37m${typingCommand}\x1b[0m`;
+
+        const promptPrefix =
+          "\x1b[38;5;48m$\x1b[0m" +
+          "\x1b[38;5;213mroot\x1b[0m" +
+          "\x1b[33m@\x1b[0m" +
+          "\x1b[33m:\x1b[0m" +
+          "\x1b[38;5;75m" + currentPath + "\x1b[0m" +
+          "\x1b[38;5;48m#> \x1b[0m";
+
+        return promptPrefix + coloredCmd;
+      };
+
+      // Interceptor de eventos de teclado personalizados para xterm.js
+      term.attachCustomKeyEventHandler((event) => {
+        if (event.type === "keydown") {
+          // Ctrl + C: Envía SIGINT (\x03) para abortar el proceso bloqueado y reinicia el buffer local
+          if (event.ctrlKey && event.key.toLowerCase() === "c") {
+            event.preventDefault();
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send("\x03");
+              currentCommand = "";
+              term.write("^C\r\n");
+              term.write(renderPrompt(""));
+            }
+            return false;
+          }
+
+          // Shift + Insert: Pega el contenido del portapapeles en la línea de comandos actual
+          if (event.shiftKey && (event.key === "Insert" || event.code === "Insert")) {
+            event.preventDefault();
+            navigator.clipboard
+              .readText()
+              .then((text) => {
+                if (text && ws.readyState === WebSocket.OPEN) {
+                  currentCommand += text;
+                  term.write("\r\x1b[K" + renderPrompt(currentCommand));
+                }
+              })
+              .catch((err) => {
+                console.error("Error al acceder al portapapeles:", err);
+              });
+            return false;
+          }
+        }
+        return true;
+      });
+
+      // Refuerzo DOM directo para capturar Shift+Insert / Ctrl+C si xterm pierde el foco de eventos globales
+      const handleDomKeyDown = (e: KeyboardEvent) => {
+        if (ws.readyState !== WebSocket.OPEN) return;
+
+        if (e.ctrlKey && e.key.toLowerCase() === "c") {
+          e.preventDefault();
+          e.stopPropagation();
+          ws.send("\x03");
+          currentCommand = "";
+          term.write("^C\r\n");
+          term.write(renderPrompt(""));
+        } else if (e.shiftKey && (e.key === "Insert" || e.code === "Insert")) {
+          e.preventDefault();
+          e.stopPropagation();
+          navigator.clipboard
+            .readText()
+            .then((text) => {
+              if (text) {
+                currentCommand += text;
+                term.write("\r\x1b[K" + renderPrompt(currentCommand));
+              }
+            })
+            .catch((err) => console.error("Error al leer portapapeles DOM:", err));
+        }
+      };
+
+      const currentElement = terminalRef.current;
+      if (currentElement) {
+        currentElement.addEventListener("keydown", handleDomKeyDown);
+      }
 
       ws.onopen = () => {
         if (!isMounted) return;
         term.writeln("\x1b[32mConnected to container shell...\x1b[0m");
 
-        // Configuramos el PS1 para que la shell imprima el directorio actual (\w) tras la arroba
-        ws.send("export PS1='root@\\w \\$ '\n");
+        ws.send("stty -echo\n");
+        ws.send("alias ls='ls --color=always'\n");
         ws.send("clear\n");
-        term.write("root@:/app ");
+        term.write(renderPrompt(""));
       };
 
       ws.onmessage = (event) => {
@@ -53,19 +151,22 @@ export const TerminalComponent = ({ nodeId }: { nodeId: number }) => {
 
         const data = event.data;
 
-        // Si la respuesta contiene la ruta del pwd oculto, la interceptamos
         if (data.includes("|||PWD_RESP:")) {
           const parts = data.split("|||PWD_RESP:");
           const cleanOutput = parts[0];
           const pathRes = parts[1].split("|||")[0].trim();
 
+          pwdRef.current = pathRes;
           setPwd(pathRes);
-          term.write(cleanOutput);
-          term.write(`root@:${pathRes}# `);
+
+          if (cleanOutput.trim()) {
+            term.write(cleanOutput.replace(/\r?\n/g, "\r\n") + "\r\n");
+          }
+          term.write(renderPrompt(""));
           return;
         }
 
-        term.write(data);
+        term.write(data.replace(/\r?\n/g, "\r\n"));
       };
 
       ws.onerror = (error) => {
@@ -87,47 +188,53 @@ export const TerminalComponent = ({ nodeId }: { nodeId: number }) => {
         const charCode = data.charCodeAt(0);
 
         // 1. Borrado (Backspace / Delete)
-        if (charCode === 127 || charCode === 8) {
+        if (charCode === 127 || charCode === 8 || data === "\u007f") {
           if (currentCommand.length > 0) {
             currentCommand = currentCommand.slice(0, -1);
-            term.write("\b \b");
-            ws.send(data);
+            term.write("\r\x1b[K" + renderPrompt(currentCommand));
           }
           return;
         }
 
-        // 2. Tabulador (Autocompletado básico)
+        // 2. Tabulador
         if (charCode === 9) {
-          if (currentCommand.startsWith("dock")) {
-            const completion = "er-compose ";
-            currentCommand += completion;
-            term.write("er-compose ");
-            ws.send("er-compose ");
-          } else {
-            ws.send(data);
-          }
           return;
         }
 
         // 3. Enter
         if (data === "\r" || data === "\n") {
           term.write("\r\n");
-          ws.send("\n");
-          ws.send('echo "|||PWD_RESP:$(pwd)|||"\n');
+          
+          const trimmed = currentCommand.trim();
+          if (trimmed === "clear") {
+            term.clear();
+            ws.send("clear\n");
+            term.write(renderPrompt(""));
+          } else if (trimmed !== "") {
+            ws.send(currentCommand + "\n");
+            ws.send('echo "|||PWD_RESP:$(pwd)|||"\n');
+          } else {
+            term.write(renderPrompt(""));
+          }
+
           currentCommand = "";
           return;
         }
 
         // 4. Caracteres normales
-        currentCommand += data;
-        term.write(data);
-        ws.send(data);
+        if (data.length === 1 && charCode >= 32 && charCode <= 126) {
+          currentCommand += data;
+          term.write("\r\x1b[K" + renderPrompt(currentCommand));
+        }
       });
     }, 100);
 
     return () => {
       isMounted = false;
       clearTimeout(timer);
+      if (terminalRef.current) {
+        terminalRef.current.removeEventListener("keydown", () => {});
+      }
       if (termInstance.current) {
         termInstance.current.dispose();
         termInstance.current = null;
@@ -142,7 +249,8 @@ export const TerminalComponent = ({ nodeId }: { nodeId: number }) => {
   return (
     <div
       ref={terminalRef}
-      className="h-full w-full min-h-[350px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[#09090b] [&::-webkit-scrollbar-thumb]:bg-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
+      tabIndex={0}
+      className="h-full w-full min-h-[350px] overflow-y-auto focus:outline-none [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-[#09090b] [&::-webkit-scrollbar-thumb]:bg-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-zinc-700"
     />
   );
 };

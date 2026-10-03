@@ -16,7 +16,8 @@ export interface ServerNodeData {
   name: string;
   ipAddress: string;
   operatingSystem: string;
-  active: boolean;
+  active?: boolean;
+  isActive?: boolean;
   metrics: Metric[];
 }
 
@@ -42,8 +43,8 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchClusterNodes = async () => {
       try {
-        // 1. Obtener la lista de nodos registrados en BD
-        const nodesRes = await fetch("http://localhost:8081/api/nodes");
+        // 1. Obtener la lista de nodos registrados activos en BD
+        const nodesRes = await fetch("http://localhost:8081/api/nodes/active");
         if (!nodesRes.ok)
           throw new Error(`Error obteniendo nodos: ${nodesRes.status}`);
         const nodesList = (await nodesRes.json()) as ServerNodeData[];
@@ -53,7 +54,7 @@ export default function Dashboard() {
           nodesList.map(async (node) => {
             try {
               const metricsRes = await fetch(
-                `http://localhost:8081/api/metrics/history/${node.id}`
+                `http://localhost:8081/api/metrics/history/${node.id}`,
               );
               const metricsData = metricsRes.ok
                 ? ((await metricsRes.json()) as Metric[])
@@ -62,14 +63,55 @@ export default function Dashboard() {
             } catch (err) {
               console.error(
                 `Error al cargar métricas para nodo ${node.id}:`,
-                err
+                err,
               );
               return { ...node, metrics: [] };
             }
-          })
+          }),
         );
 
         setNodes(nodesWithMetrics);
+
+        // 3. CALCULAR MÉTRICAS GLOBALES (MEDIA DEL CLÚSTER)
+        // Buscamos cuántos timestamps comunes hay o usamos los del primer nodo como base de tiempo
+        if (nodesWithMetrics.length > 0) {
+          const firstNodeMetrics = nodesWithMetrics[0].metrics;
+
+          const calculatedAvgs: Metric[] = firstNodeMetrics.map((m, index) => {
+            let totalCpu = 0;
+            let totalRam = 0;
+            let totalDisk = 0;
+            let totalIngest = 0;
+            let totalReplica = 0;
+            let count = 0;
+
+            nodesWithMetrics.forEach((node) => {
+              if (node.metrics[index]) {
+                totalCpu += node.metrics[index].cpuUsage || 0;
+                totalRam += node.metrics[index].ramUsedGB || 0;
+                totalDisk += node.metrics[index].diskUsagePercentage || 0;
+                totalIngest += node.metrics[index].ingestDiskBytes || 0;
+                totalReplica += node.metrics[index].replicaDiskBytes || 0;
+                count++;
+              }
+            });
+
+            return {
+              id: 0,
+              timestamp: m.timestamp,
+              cpuUsage: count > 0 ? Number((totalCpu / count).toFixed(1)) : 0,
+              ramTotalGB: 16,
+              ramUsedGB: count > 0 ? Number((totalRam / count).toFixed(1)) : 0,
+              diskUsagePercentage:
+                count > 0 ? Number((totalDisk / count).toFixed(1)) : 0,
+              ingestDiskBytes: totalIngest,
+              replicaDiskBytes: totalReplica,
+            };
+          });
+
+          setAvgMetric(calculatedAvgs);
+        }
+
         setLoading(false);
       } catch (err) {
         console.error("Error devorando nodos del backend:", err);
@@ -77,7 +119,7 @@ export default function Dashboard() {
     };
 
     fetchClusterNodes();
-    const interval = setInterval(fetchClusterNodes, 5000);
+    const interval = setInterval(fetchClusterNodes, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -87,6 +129,11 @@ export default function Dashboard() {
 
   // Filtrar la lista de nodos para renderizar según el rol seleccionado
   const filteredNodes = nodes.filter((node) => {
+    // 1. Primero descartar si el nodo está inactivo en la BD
+    const isEnabled = node.active ?? node.isActive ?? false;
+    if (!isEnabled) return false;
+
+    // 2. Luego aplicar el filtro por rol
     if (activeRole === "all") return true;
     const nameLower = node.name.toLowerCase();
     if (activeRole === "ingesta") return nameLower.includes("ingest");
@@ -97,11 +144,12 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="p-4 md:p-8 bg-slate-950 text-slate-100 min-h-screen w-full flex justify-center">
+    <div className="p-6 bg-slate-950 text-slate-100 min-h-screen w-full flex-col column justify-center">
+      <div className="mb-6">
+        <Header />
+      </div>
       {/* Contenedor centralizado de ancho máximo */}
       <div className="w-full max-w-full space-y-8">
-        <Header />
-
         {/* --- SELECTOR DE FILTRO DE NODO --- */}
         <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -177,7 +225,9 @@ export default function Dashboard() {
                           {node.name}
                         </span>
                         <span className="text-[10px] font-mono text-slate-500">
-                          {node.ipAddress === '127.0.0.1' ? (`${node.ipAddress} | localhost`) : (node.ipAddress)}
+                          {node.ipAddress === "127.0.0.1"
+                            ? `${node.ipAddress} | localhost`
+                            : node.ipAddress}
                         </span>
                       </div>
                       <div className="flex-1 min-h-100">
@@ -195,7 +245,7 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-            <MetricsTable/>
+            <MetricsTable />
           </div>
         </div>
       </div>

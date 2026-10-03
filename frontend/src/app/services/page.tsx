@@ -244,7 +244,7 @@ export default function UserHubDashboard() {
 
   return (
     <div className="flex flex-col flex-1 w-full bg-slate-950 font-sans">
-        <div className="p-8">
+        <div className="p-6">
             <Header />
         </div>
       {/* Contenido principal */}

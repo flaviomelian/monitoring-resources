@@ -98,7 +98,7 @@ export default function FileManagementPage() {
           throw new Error(
             res.status === 413
               ? "El fichero es demasiado grande (Error 413)"
-              : "Error al subir el fichero"
+              : "Error al subir el fichero",
           );
         }
       } catch (error: any) {
@@ -131,10 +131,10 @@ export default function FileManagementPage() {
     try {
       const response = await fetch(fileUrl);
       if (!response.ok) throw new Error("Error al descargar el archivo");
-      
+
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
-      
+
       const link = document.createElement("a");
       link.href = blobUrl;
       link.download = fileName;
@@ -157,7 +157,15 @@ export default function FileManagementPage() {
   };
 
   const isImageFile = (fileName: string) => {
-    const extensions = [".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp"];
+    const extensions = [
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".gif",
+      ".webp",
+      ".svg",
+      ".bmp",
+    ];
     return extensions.some((ext) => fileName.toLowerCase().endsWith(ext));
   };
 
@@ -180,7 +188,8 @@ export default function FileManagementPage() {
                 Gestor Universal de Ficheros y Multimedia
               </h3>
               <p className="text-xs text-slate-400">
-                Soporte para imágenes, vídeos, audio y documentos con almacenamiento persistente
+                Soporte para imágenes, vídeos, audio y documentos con
+                almacenamiento persistente
               </p>
             </div>
           </div>
@@ -218,7 +227,8 @@ export default function FileManagementPage() {
         <div className="border-2 border-dashed border-slate-800 bg-slate-950/40 rounded-2xl p-6 text-center flex flex-col items-center justify-center space-y-2">
           <FolderOpen className="w-6 h-6 text-slate-500" />
           <p className="text-xs text-slate-400">
-            Puedes subir cualquier clase de archivo. Las imágenes y vídeos se pueden visualizar directamente.
+            Puedes subir cualquier clase de archivo. Las imágenes y vídeos se
+            pueden visualizar directamente.
           </p>
         </div>
 
@@ -228,7 +238,9 @@ export default function FileManagementPage() {
               <tr className="border-b border-slate-800 text-slate-400 bg-slate-900/50">
                 <th className="p-3 font-semibold">Nombre del Fichero</th>
                 <th className="p-3 font-semibold">Tamaño</th>
-                <th className="p-3 font-semibold">Reproductor / Vista Previa</th>
+                <th className="p-3 font-semibold">
+                  Reproductor / Vista Previa
+                </th>
                 <th className="p-3 font-semibold text-right">Acciones</th>
               </tr>
             </thead>

@@ -6,21 +6,27 @@ import { ShieldCheck, Server, Cpu, ArrowRight } from "lucide-react";
 export default function HomeLanding() {
   return (
     <div className="relative min-h-screen bg-gray-950 text-white overflow-hidden flex flex-col justify-between selection:bg-blue-500 selection:text-white">
-      {/* Fondo con animación de rejilla flotante y gradientes */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -right-40 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl animate-pulse [animation-delay:2s]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293710_1px,transparent_1px),linear-gradient(to_bottom,#1f293710_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-      </div>
 
       {/* Barra de navegación superior */}
-      <header className="relative z-10 w-full max-w-7xl mx-auto px-2 py-6 flex items-center justify-evenly">
-        <div className="w-10 h-10 lg:w-15 lg:h-15 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30">
-          <Server className="w-5 h-5 text-white" />
+      <header className="relative z-10 w-full max-w-7xl mx-auto px-2 py-6 flex items-center justify-evenly group cursor-pointer">
+        <div className="relative w-10 h-10 lg:w-15 lg:h-15 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 shadow-lg shadow-blue-500/30 flex items-center justify-center overflow-hidden transition-all duration-700 ease-out group-hover:shadow-cyan-500/50 group-hover:scale-[1.02]">
+          {/* Capa de gradiente secundaria para un fundido de iluminación suave */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-out" />
+
+          <Server className="relative z-10 w-5 h-5 text-white transition-transform duration-700 ease-out group-hover:scale-105" />
         </div>
-        <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white to-blue-400 bg-clip-text text-transparent">
-          DockStream
-        </span>
+
+        {/* Contenedor de texto con fundido cruzado suave */}
+        <div className="relative font-bold tracking-tight text-xl">
+          {/* Texto base (Blanco a Azul) */}
+          <span className="bg-gradient-to-r from-white to-blue-400 bg-clip-text text-transparent transition-opacity duration-700 ease-out group-hover:opacity-0">
+            DockStream
+          </span>
+          {/* Texto alternativo en hover (Azul claro a Blanco) con fundido de entrada */}
+          <span className="absolute inset-0 bg-gradient-to-r from-blue-400 to-white bg-clip-text text-transparent opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-100">
+            DockStream
+          </span>
+        </div>
       </header>
 
       {/* Contenido Principal / Hero Section */}

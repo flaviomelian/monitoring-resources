@@ -23,8 +23,30 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Permitir OPTIONS globalmente para CORS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/**", "/api/files", "/api/files/**", "/api/nodes", "/api/nodes/**", "/api/auth/**", "/api/tasks", "/api/tasks/**", "/terminal", "/terminal/**", "/error").permitAll()
+                        // 2. Permitir acceso completo a Swagger y OpenAPI
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",
+                                "/webjars/**"
+                        ).permitAll()
+                        // 3. Tus rutas públicas habituales
+                        .requestMatchers("/api/**",
+                                         "/api/files",
+                                         "/api/files/**", 
+                                         "/api/nodes", 
+                                         "/api/nodes/**",
+                                         "/api/nodes/active", 
+                                         "/api/auth/**", 
+                                         "/api/tasks", 
+                                         "/api/tasks/**", 
+                                         "/terminal", 
+                                         "/terminal/**", 
+                                         "/error").permitAll()
+                        // 4. Todo lo demás autenticado
                         .anyRequest().authenticated());
 
         return http.build();
@@ -33,15 +55,15 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(    // Lista de acceso
-            "http://localhost:3000",                // DESPACHO
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:3000",
             "http://100.127.21.61:3000",
             "http://despacho-desktop-3basi77.tail645042.ts.net:3000",
-            "http://100.111.242.112:3000",          // AARON
+            "http://100.111.242.112:3000",
             "http://aaron-desktop.tail645042.ts.net:3000",
-            "http://100.85.96.18:3000",             // PORTATIL
+            "http://100.85.96.18:3000",
             "http://flavio-portatil.tail645042.ts.net:3000",
-            "http://100.90.26.6:3000",              // MOVIL
+            "http://100.90.26.6:3000",
             "http://flavio-xiaomi-15.tail645042.ts.net:3000"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));

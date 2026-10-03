@@ -1,6 +1,6 @@
 "use client";
 
-import { Layers, LogOut, LayoutDashboard, CheckSquare, FileText, FolderUp, Server } from "lucide-react";
+import { Layers, LogOut, LayoutDashboard, CheckSquare, FileText, FolderUp, Server, BookOpen, ExternalLink, Monitor } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -11,15 +11,12 @@ export default function Header() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Supongamos que guardas el rol o los datos del usuario en localStorage 
-    // (p.ej., localStorage.getItem("role") === "admin" o decodificando el token)
-    const userRole = localStorage.getItem("role"); // o lee tu estructura de usuario
+    const userRole = localStorage.getItem("role");
     const adminCheck = userRole === "ROLE_ADMIN";
     setIsAdmin(adminCheck);
 
-    // Si no es admin e intenta acceder por URL directamente al dashboard, redirigir
     if (pathname === "/dashboard" && !adminCheck) 
-      router.push("/kanban"); // Redirige a una ruta permitida
+      router.push("/kanban");
   }, [pathname, router]);
 
   const handleLogout = () => {
@@ -72,6 +69,33 @@ export default function Header() {
             </Link>
           );
         })}
+
+        {/* Enlace interno a la documentación del Frontend */}
+        <Link 
+          href="/frontend-doc" 
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition ${
+            pathname === "/frontend-doc" 
+              ? "bg-slate-800 border-slate-700 text-white shadow-sm ring-1 ring-slate-700" 
+              : "bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-300"
+          }`}
+          title="Documentación del Frontend"
+        >
+          <Monitor size={20} className="text-cyan-400" />
+          <span>Docs Cliente</span>
+        </Link>
+
+        {/* Enlace externo a la documentación de Swagger con indicador de salida */}
+        <a 
+          href="http://localhost:8081/swagger-ui/index.html" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-300 text-xs font-medium transition group"
+          title="Documentación de la API (Swagger)"
+        >
+          <BookOpen size={20} className="text-pink-400" />
+          <span>Swagger</span>
+          <ExternalLink size={14} className="text-slate-500 group-hover:text-slate-300 transition" />
+        </a>
 
         <button 
           onClick={handleLogout}

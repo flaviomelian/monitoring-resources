@@ -46,15 +46,9 @@ export default function HistoryChart({
   // Cálculo del valor máximo alcanzado según el rol activo para acotar el eje Y de forma inteligente
   const allValues = activeChartData.flatMap((m) => {
     const vals: number[] = [];
-    if (activeRole === "all" || activeRole === "master") {
-      vals.push(m.cpuUsage ?? 0, m.ramUsagePercentage ?? 0);
-    }
-    if (activeRole === "all" || activeRole === "ingesta") {
-      vals.push(m.ingestMB ?? 0);
-    }
-    if (activeRole === "all" || activeRole === "replica") {
-      vals.push(m.replicaMB ?? 0);
-    }
+    if (activeRole === "all" || activeRole === "master") vals.push(m.cpuUsage ?? 0, m.ramUsagePercentage ?? 0);
+    if (activeRole === "all" || activeRole === "ingesta") vals.push(m.ingestMB ?? 0);
+    if (activeRole === "all" || activeRole === "replica") vals.push(m.replicaMB ?? 0);
     return vals;
   });
 

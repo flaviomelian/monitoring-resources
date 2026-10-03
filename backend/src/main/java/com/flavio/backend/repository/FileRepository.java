@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface FileRepository extends JpaRepository<File, Long> {
     List<File> findByDeletedFalse();
     Optional<File> findByIdAndDeletedFalse(Long id);
+    Optional<File> findByUniqueName(String uniqueName);
 }

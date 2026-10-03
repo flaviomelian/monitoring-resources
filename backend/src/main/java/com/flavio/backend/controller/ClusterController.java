@@ -2,6 +2,14 @@ package com.flavio.backend.controller;
 
 import com.flavio.backend.service.ClusterOrchestratorService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +33,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cluster")
+@Tag(name = "Cluster Controller", description = "Endpoints para la orquestación del clúster, escalado dinámico, gestión de puertos y lectura de registros/logs")
 public class ClusterController {
 
     private final ClusterOrchestratorService orchestratorService;
@@ -43,6 +52,13 @@ public class ClusterController {
         this.portsFilePath = portsPath;
     }
 
+    @Operation(summary = "Escalar clúster vertical/horizontalmente", description = "Crea un nuevo nodo réplica en el clúster, registra el evento en los logs y asigna un nuevo puerto secuencial.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Scale-up ejecutado con éxito",
+            content = @Content(mediaType = "text/plain", schema = @Schema(example = "Replica creada correctamente en el puerto 8084"))),
+        @ApiResponse(responseCode = "500", description = "Error interno al escalar el clúster",
+            content = @Content(mediaType = "text/plain", schema = @Schema(example = "Error al escalar el clúster: ...")))
+    })
     @PostMapping("/scale-up")
     public ResponseEntity<String> scaleUp() {
         try {
@@ -67,6 +83,13 @@ public class ClusterController {
         }
     }
 
+    @Operation(summary = "Obtener registros de logs", description = "Devuelve el contenido completo del archivo de registro de eventos del clúster línea por línea.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de líneas de logs obtenida con éxito",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class)))),
+        @ApiResponse(responseCode = "500", description = "Error de I/O o la ruta configurada es un directorio",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class))))
+    })
     @GetMapping(value = "/logs", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> getLogs() {
         try {
@@ -93,6 +116,13 @@ public class ClusterController {
         }
     }
 
+    @Operation(summary = "Obtener nodos activos", description = "Lee el registro de puertos y devuelve una lista con las URLs correspondientes a todos los nodos del clúster.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de URLs de nodos obtenida con éxito",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class)))),
+        @ApiResponse(responseCode = "500", description = "Error de lectura del archivo de puertos o la ruta es un directorio",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class))))
+    })
     @GetMapping(value = "/nodes", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> getNodes() {
         File portsFile = new File(this.portsFilePath);
@@ -120,20 +150,6 @@ public class ClusterController {
             // LOG de depuración
             System.out.println("-------------------------------------- Puertos leídos: " + puertos
                     + " --------------------------------------");
-
-            // OPCIÓN A: Si el Frontend espera directamente las URLs internas del contenedor
-            // Docker
-            // Ejemplo: Convierte el puerto 8084 ->
-            // "http://monitoring-resources-alpine-replica-3:8080"
-            /*
-             * List<String> nodos = puertos.stream()
-             * .map(puerto -> {
-             * int numReplica = Integer.parseInt(puerto) - 8081;
-             * return "http://monitoring-resources-alpine-replica-" + numReplica + ":8080";
-             * })
-             * .toList();
-             * return ResponseEntity.ok(nodos);
-             */
 
             // OPCIÓN B: Si el Frontend o cliente accede desde fuera vía localhost/host
             // Ejemplo: Convierte el puerto 8084 -> "http://localhost:8084"

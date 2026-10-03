@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Upload,
   FileText,
@@ -8,7 +8,8 @@ import {
   Server,
   Loader2,
   ExternalLink,
-  Terminal,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import { Metric } from "../types";
 import { NodeTerminalModal } from "./NodeTerminalModal";
@@ -30,9 +31,47 @@ export default function NodesGrid({ latest }: Props) {
   const [ingestFiles, setIngestFiles] = useState<string[]>([]);
   const [activeReplicas, setActiveReplicas] = useState<ReplicaNode[]>([]);
 
+  // Estados para el selector de Fan-Out y selección múltiple
+  const [selectedTargets, setSelectedTargets] = useState<string[]>(['FAN_OUT']);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Cerrar el desplegable al hacer clic fuera
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const toggleTarget = (target: string) => {
+    if (target === 'FAN_OUT') {
+      setSelectedTargets(['FAN_OUT']);
+      return;
+    }
+
+    let updated = selectedTargets.filter(t => t !== 'FAN_OUT');
+    
+    if (updated.includes(target)) {
+      updated = updated.filter(t => t !== target);
+      if (updated.length === 0) updated = ['FAN_OUT'];
+    } else {
+      updated.push(target);
+    }
+    setSelectedTargets(updated);
+  };
+
+  const getDisplayText = () => {
+    if (selectedTargets.includes('FAN_OUT')) return '⚡ Fan-Out (Broadcast a todos)';
+    if (selectedTargets.length === 1) return selectedTargets[0];
+    return `${selectedTargets.length} contenedores seleccionados`;
+  };
+
   const fetchVolumeFiles = async (signal?: AbortSignal) => {
     try {
-      // 1. Obtener archivos del nodo de ingesta principal
       const resIngest = await fetch(
         "http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/metrics/ingest/files",
         { signal },
@@ -41,14 +80,12 @@ export default function NodesGrid({ latest }: Props) {
       const dataIngest = resIngest?.ok ? await resIngest.json() : [];
       setIngestFiles(dataIngest);
 
-      // 2. Pedir al backend las URLs de los nodos registrados
       const resNodes = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/cluster/nodes", {
         signal,
       }).catch(() => null);
 
       const nodeUrls: string[] = resNodes?.ok ? await resNodes.json() : [];
 
-      // 3. Consultar dinámicamente CADA URL y manejar su estado de carga individual
       const replicaPromises = nodeUrls.map(async (baseUrl, index) => {
         const port = parseInt(baseUrl.split(":").pop() || "8082", 10);
         const name = `alpine-replica-${index + 1}`;
@@ -88,11 +125,7 @@ export default function NodesGrid({ latest }: Props) {
       });
 
       const results = await Promise.all(replicaPromises);
-
-      const detectedReplicas = results.filter(
-        (r): r is ReplicaNode => r !== null,
-      );
-
+      const detectedReplicas = results.filter((r): r is ReplicaNode => r !== null);
       setActiveReplicas(detectedReplicas);
     } catch (err) {
       if (err instanceof Error && err.name !== "AbortError") {
@@ -103,13 +136,11 @@ export default function NodesGrid({ latest }: Props) {
 
   useEffect(() => {
     const controller = new AbortController();
-
     const loadClusterData = async () => {
       await fetchVolumeFiles(controller.signal);
     };
 
     loadClusterData();
-
     const interval = setInterval(() => {
       loadClusterData();
     }, 5000);
@@ -126,6 +157,8 @@ export default function NodesGrid({ latest }: Props) {
 
     const formData = new FormData();
     formData.append("file", file);
+    // Añadimos los targets seleccionados al FormData para que tu Spring Boot sepa a dónde enrutar el fan-out o los nodos específicos
+    formData.append("targets", JSON.stringify(selectedTargets));
 
     setUploading(true);
     try {
@@ -138,7 +171,7 @@ export default function NodesGrid({ latest }: Props) {
       );
       if (res.ok) {
         fetchVolumeFiles();
-        alert("✅ Archivo añadido correctamente.");
+        alert("✅ Archivo transmitido y replicado correctamente.");
       } else alert("❌ Error en la transmisión del bloque.");
     } catch (err) {
       console.error(err);
@@ -149,7 +182,6 @@ export default function NodesGrid({ latest }: Props) {
   };
 
   const handleCreateNode = async () => {
-    console.log("Iniciando solicitud de escalado...");
     setCreatingNode(true);
     try {
       const res = await fetch("http://localhost:8081/api/cluster/scale-up", {
@@ -159,9 +191,7 @@ export default function NodesGrid({ latest }: Props) {
         },
       });
 
-      console.log("HTTP Status Code:", res.status);
       const data = await res.text();
-      console.log("Respuesta del servidor:", data);
 
       if (res.ok) {
         alert(`🚀 ¡Orquestación exitosa!\n${data}`);
@@ -225,12 +255,60 @@ export default function NodesGrid({ latest }: Props) {
               <Server className="h-4 w-4 text-amber-500/60" />
               alpine-ingest-app
             </span>
-            <span className="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-black tracking-wide">
-              GATEWAY
-            </span>
-            <span className="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-black tracking-wide">
-              PORT: 8081
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-black tracking-wide">
+                GATEWAY
+              </span>
+              <span className="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-black tracking-wide">
+                PORT: 8081
+              </span>
+            </div>
+          </div>
+
+          {/* SELECTOR DE DESTINOS (FAN-OUT / MULTI-CONTAINER) */}
+          <div className="mb-4 relative" ref={dropdownRef}>
+            <label className="block text-[10px] uppercase font-bold text-slate-500 tracking-wider mb-1.5">
+              Destino de Replicación (Fan-Out / Selectivo)
+            </label>
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full flex items-center justify-between bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-300 hover:border-amber-500/40 transition-colors"
+            >
+              <span className="truncate">{getDisplayText()}</span>
+              <ChevronDown className={`h-3.5 w-3.5 text-amber-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute z-20 mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg shadow-2xl overflow-hidden">
+                <div
+                  onClick={() => toggleTarget('FAN_OUT')}
+                  className="flex items-center justify-between px-3 py-2 text-xs font-mono hover:bg-slate-900 cursor-pointer text-amber-400 border-b border-slate-900"
+                >
+                  <span>⚡ Fan-Out (Broadcast a todos)</span>
+                  {selectedTargets.includes('FAN_OUT') && <Check className="h-3.5 w-3.5 text-amber-400" />}
+                </div>
+                <div className="max-h-40 overflow-y-auto custom-scrollbar">
+                  {activeReplicas.length === 0 ? (
+                    <div className="px-3 py-2 text-xs text-slate-600 italic">No hay réplicas activas disponibles</div>
+                  ) : (
+                    activeReplicas.map((replica) => {
+                      const isSelected = selectedTargets.includes(replica.name);
+                      return (
+                        <div
+                          key={replica.port}
+                          onClick={() => toggleTarget(replica.name)}
+                          className="flex items-center justify-between px-3 py-2 text-xs font-mono hover:bg-slate-900 cursor-pointer text-slate-300 transition-colors border-b border-slate-900/40 last:border-0"
+                        >
+                          <span className="truncate">{replica.name} <span className="text-slate-500 text-[10px]">(:{replica.port})</span></span>
+                          {isSelected && <Check className="h-3.5 w-3.5 text-amber-400" />}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between items-end mt-2">
@@ -339,7 +417,7 @@ export default function NodesGrid({ latest }: Props) {
                         Espacio Consolidado
                       </p>
                       <p className="text-2xl font-black text-purple-400 font-mono mt-0.5">
-                        {latest.replicaDiskBytes.toFixed(1)}{" "}
+                        {(latest.replicaDiskBytes / 1000000).toFixed(1)}{" "}
                         <span className="text-xs font-normal text-slate-400">
                           MB
                         </span>

@@ -5,6 +5,15 @@ import com.flavio.backend.repository.MetricAverageProjection;
 import com.flavio.backend.repository.ResourceMetricRepository;
 import com.flavio.backend.service.MonitoringService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -24,6 +33,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/metrics")
+@Tag(name = "Metrics Controller", description = "Endpoints para la gestión de métricas, ficheros de monitorización y transferencia entre nodos")
 public class MetricsController {
 
     private final ResourceMetricRepository metricRepository;
@@ -36,8 +46,14 @@ public class MetricsController {
         this.metricRepository = metricRepository;
     }
 
+    @Operation(summary = "Obtener historial de métricas por nodo", description = "Devuelve el historial completo de métricas de recursos ordenadas cronológicamente por timestamp para un nodo específico.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Historial obtenido con éxito",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ResourceMetric.class))))
+    })
     @GetMapping("/history/{nodeId}")
-    public ResponseEntity<List<ResourceMetric>> getHistory(@PathVariable Long nodeId) {
+    public ResponseEntity<List<ResourceMetric>> getHistory(
+            @Parameter(description = "ID único del nodo de servidor", example = "1") @PathVariable Long nodeId) {
         List<ResourceMetric> history = metricRepository.findByServerNodeIdOrderByTimestampAsc(nodeId);
         return ResponseEntity.ok(history);
     }
@@ -46,8 +62,14 @@ public class MetricsController {
      * ENDPOINT DE INGEST (Puerto 8081)
      * El frontend de Next.js le envía el .txt aquí
      */
+    @Operation(summary = "Subir archivo al ingest", description = "Recibe un archivo de texto con métricas desde el frontend e inicia el reenvío hacia la réplica.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Archivo procesado y reenviado con éxito",
+            content = @Content(mediaType = "text/plain", schema = @Schema(example = "Flujo completado con éxito. Respuesta de Réplica: ...")))
+    })
     @PostMapping("/ingest/upload")
-    public ResponseEntity<String> uploadToIngest(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadToIngest(
+            @Parameter(description = "Archivo de texto con métricas a subir") @RequestParam("file") MultipartFile file) {
         System.out.println(
                 "🚀 [INGEST]: Archivo [" + file.getOriginalFilename() + "] interceptado. Chutando a la réplica...");
 
@@ -61,8 +83,16 @@ public class MetricsController {
      * ENDPOINT DE RÉPLICA (Puerto 8082)
      * Ingest le pega a este endpoint internamente
      */
+    @Operation(summary = "Recibir archivo en réplica", description = "Endpoint interno de la réplica que almacena el archivo recibido y procesa las métricas.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Archivo replicado y procesado correctamente",
+            content = @Content(mediaType = "text/plain", schema = @Schema(example = "Archivo replicado en /monitored/default"))),
+        @ApiResponse(responseCode = "500", description = "Error de escritura o procesamiento de archivos",
+            content = @Content(mediaType = "text/plain", schema = @Schema(example = "Error al escribir el archivo: ...")))
+    })
     @PostMapping("/replica/receive")
-    public ResponseEntity<String> receiveInReplica(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> receiveInReplica(
+            @Parameter(description = "Archivo recibido para réplica") @RequestParam("file") MultipartFile file) {
         try {
             // Usamos la variable inyectada dinámicamente
             Path directory = Paths.get(storagePath);
@@ -79,11 +109,21 @@ public class MetricsController {
         }
     }
 
+    @Operation(summary = "Listar archivos del ingest", description = "Devuelve una lista con los nombres de los archivos almacenados localmente en el ingest.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de archivos obtenida con éxito",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class))))
+    })
     @GetMapping("/ingest/files")
     public ResponseEntity<List<String>> getIngestFiles() {
         return ResponseEntity.ok(monitoringService.getLocalStoredFiles());
     }
 
+    @Operation(summary = "Listar archivos de la réplica", description = "Devuelve una lista con los nombres de los archivos almacenados en la ruta de la réplica actual.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de archivos de réplica obtenida con éxito",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class))))
+    })
     @GetMapping("/replica/files")
     public ResponseEntity<List<String>> getReplicaFiles() {
         // Usamos la variable inyectada para que cada réplica liste su propia carpeta
@@ -94,8 +134,15 @@ public class MetricsController {
         return ResponseEntity.ok(files != null ? Arrays.asList(files) : List.of());
     }
 
+    @Operation(summary = "Servir archivo estático", description = "Permite acceder y descargar o visualizar en línea un archivo específico del servidor mediante su nombre.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Archivo servido con éxito",
+            content = @Content(mediaType = "application/octet-stream")),
+        @ApiResponse(responseCode = "404", description = "Archivo no encontrado")
+    })
     @GetMapping("/file/{filename:.+}")
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+    public ResponseEntity<Resource> serveFile(
+            @Parameter(description = "Nombre del archivo a recuperar", example = "metrics_2026.txt") @PathVariable String filename) {
         // 1. Construye la ruta donde sabes que están los archivos
         // Ojo: Ajusta la ruta base según el contenedor, ej: "/monitored/replicaX/"
         Path filePath = Paths.get("/monitored/replica3").resolve(filename);
@@ -115,6 +162,11 @@ public class MetricsController {
      * Devuelve un consolidado o la media de métricas de todos los nodos por
      * timestamp
      */
+    @Operation(summary = "Obtener medias del clúster", description = "Devuelve un consolidado con el promedio de las métricas de todos los nodos agrupadas por timestamp.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Métricas promedio obtenidas con éxito",
+            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = MetricAverageProjection.class))))
+    })
     @GetMapping("/history/average")
     public ResponseEntity<List<MetricAverageProjection>> getClusterAverageHistory() {
         // Opción limpia: delegar al servicio la agrupación y cálculo de la media por
