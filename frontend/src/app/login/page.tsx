@@ -21,7 +21,7 @@ export default function LoginPage() {
     setStatusMessage(null);
 
     try {
-      const res = await fetch("http://localhost:8081/api/auth/login", {
+      const res = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
