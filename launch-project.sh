@@ -34,13 +34,13 @@ case "$ACTION" in
         echo "⏳ Esperando ${FRONTEND_WAIT_TIME}s para que los servicios base se estabilicen..."
         sleep "$FRONTEND_WAIT_TIME"
 
-        # 3. Arrancar Frontend en segundo plano (desacoplado y escuchando en 0.0.0.0)
+       # 3. Arrancar Frontend en segundo plano usando el script del package.json
         echo "💻 Lanzando servidor de desarrollo de Frontend en segundo plano..."
         if [ -d "frontend" ]; then
             cd frontend || exit 1
 
-            # Se lanza en background guardando el log para depuración y abriendo el binding a la red
-            nohup npx next dev -H 0.0.0.0 > "$PROJECT_ROOT/.frontend.log" 2>&1 &
+            # Lanza el script "dev" ya configurado con -H 0.0.0.0 en el package.json
+            nohup npm run dev > "$PROJECT_ROOT/.frontend.log" 2>&1 &
             FRONTEND_PID=$!
             echo "$FRONTEND_PID" > "$PID_FILE"
 

@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Eliminamos output: 'export'
+  turbopack: {},
+
   async rewrites() {
     return [
       {
