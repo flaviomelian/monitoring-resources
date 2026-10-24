@@ -26,11 +26,15 @@ services:
       - "8081:8080"
     volumes:
       - ./data/ingest:/monitored/ingest:rw
+      - ./data/replica1:/monitored/replica1:rw
+      - ./data/replica2:/monitored/replica2:rw
       - ~/.ssh/id_local_ssh:/root/.ssh/id_local_ssh:ro
       - ./backend/scripts/launch-replica.sh:/app/scripts/launch-replica.sh:ro
       - ./logs:/app/logs
       - ./uploads:/app/uploads
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      - STORAGE_PATH=/monitored/ingest    
       - NODE_NAME=Nodo-Ingest-8081
       - SPRING_DATASOURCE_URL=jdbc:mysql://custom-linux-db:3306/sandbox_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       - SPRING_DATASOURCE_USERNAME=root
@@ -59,6 +63,7 @@ services:
       - STORAGE_PATH=/monitored/replica1
     volumes:
       - ./data/replica1:/monitored/replica1:rw
+      - ~/.ssh/id_local_ssh:/root/.ssh/id_local_ssh:ro
     depends_on:
       custom-linux-db:
         condition: service_healthy
@@ -79,6 +84,7 @@ services:
       - STORAGE_PATH=/monitored/replica2
     volumes:
       - ./data/replica2:/monitored/replica2:rw
+      - ~/.ssh/id_local_ssh:/root/.ssh/id_local_ssh:ro
     depends_on:
       custom-linux-db:
         condition: service_healthy

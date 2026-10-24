@@ -1,8 +1,11 @@
 package com.flavio.backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +25,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,15 +40,16 @@ public class FileController {
 
     @Autowired
     private FileService fileService;
+    @Value("${STORAGE_ROOT:/monitored}")
+    private String storageRoot;
+
+    private static final Pattern NODE_PATTERN = Pattern.compile("^(ingest|replica\\d+)$");
 
     @Operation(summary = "Subir un fichero", description = "Sube un fichero al sistema de almacenamiento local y gestiona su replicación según los destinos especificados.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Fichero subido y replicado con éxito",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = FileResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Error al subir el fichero (problema de E/S)",
-            content = @Content(mediaType = "text/plain", schema = @Schema(example = "Error al subir el fichero: ..."))),
-        @ApiResponse(responseCode = "500", description = "Error interno durante el proceso de replicación",
-            content = @Content(mediaType = "text/plain", schema = @Schema(example = "Error en la replicación: ...")))
+            @ApiResponse(responseCode = "200", description = "Fichero subido y replicado con éxito", content = @Content(mediaType = "application/json", schema = @Schema(implementation = FileResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Error al subir el fichero (problema de E/S)", content = @Content(mediaType = "text/plain", schema = @Schema(example = "Error al subir el fichero: ..."))),
+            @ApiResponse(responseCode = "500", description = "Error interno durante el proceso de replicación", content = @Content(mediaType = "text/plain", schema = @Schema(example = "Error en la replicación: ...")))
     })
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(
@@ -65,10 +72,9 @@ public class FileController {
 
     @Operation(summary = "Descargar un fichero", description = "Permite descargar o visualizar un fichero almacenado a partir de su nombre único.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Fichero servido con éxito",
-            content = @Content(mediaType = "application/octet-stream")),
-        @ApiResponse(responseCode = "404", description = "Fichero no encontrado"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Fichero servido con éxito", content = @Content(mediaType = "application/octet-stream")),
+            @ApiResponse(responseCode = "404", description = "Fichero no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(
@@ -102,8 +108,7 @@ public class FileController {
 
     @Operation(summary = "Listar ficheros activos", description = "Devuelve una lista con todos los metadatos y URIs de descarga de los ficheros activos.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de ficheros obtenida con éxito",
-            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = FileDto.class))))
+            @ApiResponse(responseCode = "200", description = "Lista de ficheros obtenida con éxito", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = FileDto.class))))
     })
     @GetMapping
     public ResponseEntity<List<FileDto>> listFiles() {
@@ -117,11 +122,46 @@ public class FileController {
         return ResponseEntity.ok(fileDtos);
     }
 
+    @Operation(summary = "Servir archivo HTML físico en línea", description = "Lee directamente del almacenamiento físico del nodo (ej. /monitored/replicaX) y sirve el HTML en el navegador.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Archivo HTML servido con éxito", content = @Content(mediaType = "text/html")),
+            @ApiResponse(responseCode = "404", description = "Fichero no encontrado")
+    })
+    @GetMapping("/file/{node}/{fileName:.+}")
+    public ResponseEntity<Resource> servePhysicalHtmlFile(
+            @Parameter(description = "Nodo: ingest, replica1, replica2...", example = "replica1") @PathVariable String node,
+            @Parameter(description = "Nombre del archivo HTML", example = "index.html") @PathVariable String fileName) {
+        try {
+            if (!NODE_PATTERN.matcher(node).matches()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            Path base = Paths.get(storageRoot, node).normalize();
+            Path filePath = base.resolve(fileName).normalize();
+
+            // Evita Path Traversal
+            if (!filePath.startsWith(base)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            Resource resource = new FileSystemResource(filePath.toFile());
+            if (!resource.exists() || !resource.isReadable()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.TEXT_HTML)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @Operation(summary = "Eliminación lógica de un fichero", description = "Marca un fichero como eliminado de forma lógica en la base de datos sin borrar el archivo físico.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Fichero eliminado lógicamente con éxito",
-            content = @Content(mediaType = "text/plain", schema = @Schema(example = "Fichero eliminado lógicamente de la base de datos."))),
-        @ApiResponse(responseCode = "404", description = "Fichero no encontrado")
+            @ApiResponse(responseCode = "200", description = "Fichero eliminado lógicamente con éxito", content = @Content(mediaType = "text/plain", schema = @Schema(example = "Fichero eliminado lógicamente de la base de datos."))),
+            @ApiResponse(responseCode = "404", description = "Fichero no encontrado")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> logicalDeleteFile(
@@ -135,18 +175,18 @@ public class FileController {
 
     @Schema(description = "Respuesta detallada tras subir un fichero")
     public record FileResponse(
-        @Schema(example = "1") Long id, 
-        @Schema(example = "documento.pdf") String name, 
-        @Schema(example = "http://localhost:8081/api/files/download/uuid_documento.pdf") String url, 
-        @Schema(example = "application/pdf") String type, 
-        @Schema(example = "2048") long size
-    ) {}
+            @Schema(example = "1") Long id,
+            @Schema(example = "documento.pdf") String name,
+            @Schema(example = "http://localhost:8081/api/files/download/uuid_documento.pdf") String url,
+            @Schema(example = "application/pdf") String type,
+            @Schema(example = "2048") long size) {
+    }
 
     @Schema(description = "DTO resumido con información del fichero")
     public record FileDto(
-        @Schema(example = "1") Long id, 
-        @Schema(example = "documento.pdf") String name, 
-        @Schema(example = "http://localhost:8081/api/files/download/uuid_documento.pdf") String url, 
-        @Schema(example = "2048") long size
-    ) {}
+            @Schema(example = "1") Long id,
+            @Schema(example = "documento.pdf") String name,
+            @Schema(example = "http://localhost:8081/api/files/download/uuid_documento.pdf") String url,
+            @Schema(example = "2048") long size) {
+    }
 }

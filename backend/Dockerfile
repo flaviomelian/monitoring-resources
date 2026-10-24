@@ -28,3 +28,5 @@ EXPOSE 8080
 
 # El ENTRYPOINT al final de todo, limpio y sin flags raros de JNA
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
+RUN apk add --no-cache openssh-client bash docker-cli

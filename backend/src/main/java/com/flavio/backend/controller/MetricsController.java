@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,9 @@ public class MetricsController {
     private final ResourceMetricRepository metricRepository;
     @Autowired
     private MonitoringService monitoringService;
+    // Inyectamos la ruta base configurada por entorno o un valor por defecto seguro
+    @Value("${cluster.storage.path:/monitored/replica1}")
+    private String baseStoragePath;
     @Value("${STORAGE_PATH:/monitored/default}")
     private String storagePath;
 
@@ -134,7 +138,7 @@ public class MetricsController {
         return ResponseEntity.ok(files != null ? Arrays.asList(files) : List.of());
     }
 
-    @Operation(summary = "Servir archivo estático", description = "Permite acceder y descargar o visualizar en línea un archivo específico del servidor mediante su nombre.")
+    @Operation(summary = "Servir archivo estático dinámico", description = "Permite acceder a un archivo según la ruta base del nodo actual.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Archivo servido con éxito",
             content = @Content(mediaType = "application/octet-stream")),
@@ -142,13 +146,20 @@ public class MetricsController {
     })
     @GetMapping("/file/{filename:.+}")
     public ResponseEntity<Resource> serveFile(
-            @Parameter(description = "Nombre del archivo a recuperar", example = "metrics_2026.txt") @PathVariable String filename) {
-        // 1. Construye la ruta donde sabes que están los archivos
-        // Ojo: Ajusta la ruta base según el contenedor, ej: "/monitored/replicaX/"
-        Path filePath = Paths.get("/monitored/replica3").resolve(filename);
+            @Parameter(description = "Nombre del archivo", example = "metrics.txt") 
+            @PathVariable String filename) {
+        
+        // Se resuelve utilizando la ruta base dinámica del nodo
+        Path filePath = Paths.get(baseStoragePath).resolve(filename).normalize();
+        
+        // Validación de seguridad para evitar ataques de Path Traversal (../)
+        if (!filePath.startsWith(Paths.get(baseStoragePath).normalize())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Resource resource = new FileSystemResource(filePath.toFile());
 
-        if (!resource.exists()) {
+        if (!resource.exists() || !resource.isReadable()) {
             return ResponseEntity.notFound().build();
         }
 

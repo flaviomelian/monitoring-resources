@@ -30,6 +30,7 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cluster")
@@ -114,6 +115,14 @@ public class ClusterController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
+    }
+
+    @Operation(summary = "Obtener estado de servicios del clúster", description = "Devuelve el estado operativo de los contenedores Docker monitoreados.")
+    @GetMapping("/services")
+    public ResponseEntity<List<Map<String, Object>>> getClusterServices() {
+        // Puedes delegar en tu orchestratorService o devolver la lista mapeada de contenedores
+        List<Map<String, Object>> services = orchestratorService.getMonitoredContainersStatus();
+        return ResponseEntity.ok(services);
     }
 
     @Operation(summary = "Obtener nodos activos", description = "Lee el registro de puertos y devuelve una lista con las URLs correspondientes a todos los nodos del clúster.")

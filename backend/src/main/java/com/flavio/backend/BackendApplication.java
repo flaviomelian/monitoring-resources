@@ -2,6 +2,7 @@ package com.flavio.backend;
 
 import com.flavio.backend.model.ServerNode;
 import com.flavio.backend.repository.ServerNodeRepository;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,6 +19,19 @@ import java.net.UnknownHostException;
 public class BackendApplication {
 
     public static void main(String[] args) {
+        // Cargamos Dotenv al arrancar para que inyecte las variables del .env como System properties
+        try {
+            Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+            dotenv.entries().forEach(entry -> {
+                // Solo las cargamos si no están ya definidas previamente por el sistema o Docker
+                if (System.getProperty(entry.getKey()) == null && System.getenv(entry.getKey()) == null) {
+                    System.setProperty(entry.getKey(), entry.getValue());
+                }
+            });
+        } catch (Exception e) {
+            System.out.println("⚠️ [Dotenv] No se pudo cargar el archivo .env (se usarán variables del sistema/Docker)");
+        }
+
         SpringApplication.run(BackendApplication.class, args);
     }
 
@@ -49,7 +63,7 @@ public class BackendApplication {
 
             // 3. Buscar si ya existe para actualizarlo o crear uno nuevo
             String finalNodeName = nodeName;
-            ServerNode node = serverNodeRepository.findByName(finalNodeName) //The method findByName(String) is undefined for the type ServerNodeRepository
+            ServerNode node = serverNodeRepository.findByName(finalNodeName)
                     .orElseGet(() -> {
                         ServerNode newNode = new ServerNode();
                         newNode.setName(finalNodeName);
