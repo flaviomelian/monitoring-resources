@@ -54,7 +54,7 @@ El clúster opera sobre una red virtual aislada (`monitor-net`) orquestada media
    ```
 
 3. **Acceder al panel web de operaciones:**
-   - La interfaz estará disponible en: `http://localhost:3100`
+   - La interfaz estará disponible en: `http://localhost:3000`
 
 ---
 
