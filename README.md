@@ -15,7 +15,7 @@ El clúster opera sobre una red virtual aislada (`monitor-net`) orquestada media
 
 ---
 
-## 🛠️ Desafíos Técnicos y Soluciones
+## Desafíos Técnicos y Soluciones
 
 1. **Gestión de Volúmenes y Sincronización en Entornos Docker**
    - *Problema*: Pérdida de dependencias locales (`node_modules`) al montar volúmenes de desarrollo interactivos sobre los contenedores de Node.
@@ -27,7 +27,7 @@ El clúster opera sobre una red virtual aislada (`monitor-net`) orquestada media
 
 ---
 
-## ⚙️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **Backend & Base de Datos**: Node.js, API REST, MySQL 8.0.
 - **Frontend**: React, Vite, Tailwind CSS, Lucide Icons.
