@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetProbe | Node Diagnostics</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-card">
+        <header>
+            <div class="status-indicator"></div>
+            <h1>NetProbe Node Monitor</h1>
+        </header>
+        
+        <div class="metrics-grid">
+            <div class="metric-box">
+                <span class="label">Latencia de Red</span>
+                <span id="pingValue" class="value">-- ms</span>
+            </div>
+            <div class="metric-box">
+                <span class="label">Estado del Host</span>
+                <span id="hostStatus" class="value success">Online</span>
+            </div>
+        </div>
+
+        <div class="action-section">
+            <button id="testBtn" onclick="runDiagnostics()">Ejecutar Diagnóstico</button>
+            <div id="logOutput" class="terminal-log">Esperando comandos de red...</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

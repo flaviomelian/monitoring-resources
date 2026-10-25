@@ -44,7 +44,7 @@ export default function Dashboard() {
     const fetchClusterNodes = async () => {
       try {
         // 1. Obtener la lista de nodos registrados activos en BD
-        const nodesRes = await fetch("http://localhost:8081/api/nodes/active");
+        const nodesRes = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/nodes/active");
         if (!nodesRes.ok)
           throw new Error(`Error obteniendo nodos: ${nodesRes.status}`);
         const nodesList = (await nodesRes.json()) as ServerNodeData[];
@@ -54,7 +54,7 @@ export default function Dashboard() {
           nodesList.map(async (node) => {
             try {
               const metricsRes = await fetch(
-                `http://localhost:8081/api/metrics/history/${node.id}`,
+                `http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/metrics/history/${node.id}`,
               );
               const metricsData = metricsRes.ok
                 ? ((await metricsRes.json()) as Metric[])

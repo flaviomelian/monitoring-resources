@@ -17,19 +17,17 @@ export default function ForgotPasswordPage() {
     setStatusMessage(null);
 
     try {
-      const res = await fetch('http://localhost:8080/api/auth/forgot-password', {
+      const res = await fetch('http://despacho-desktop-3basi77.tail645042.ts.net:8080/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
 
-      if (res.ok) {
-        setSent(true);
-      } else {
-        setStatusMessage('No se pudo procesar la solicitud de recuperación.');
-      }
+      if (res.ok) setSent(true);
+      else setStatusMessage('No se pudo procesar la solicitud de recuperación.');
     } catch (error) {
       setStatusMessage('Error de conexión con el backend SMTP.');
+      console.error(error);
     } finally {
       setLoading(false);
     }

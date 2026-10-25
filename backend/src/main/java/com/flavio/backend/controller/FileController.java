@@ -122,35 +122,47 @@ public class FileController {
         return ResponseEntity.ok(fileDtos);
     }
 
-    @Operation(summary = "Servir archivo HTML físico en línea", description = "Lee directamente del almacenamiento físico del nodo (ej. /monitored/replicaX) y sirve el HTML en el navegador.")
+    @Operation(summary = "Servir recurso estático físico en línea", description = "Lee directamente del almacenamiento físico del nodo (HTML, CSS, JS...) y lo sirve con su MIME type correcto.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Archivo HTML servido con éxito", content = @Content(mediaType = "text/html")),
-            @ApiResponse(responseCode = "404", description = "Fichero no encontrado")
+            @ApiResponse(responseCode = "200", description = "Archivo servido con éxito"),
+            @ApiResponse(responseCode = "404", description = "Fichero no encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado (Path Traversal)")
     })
     @GetMapping("/file/{node}/{fileName:.+}")
-    public ResponseEntity<Resource> servePhysicalHtmlFile(
+    public ResponseEntity<Resource> servePhysicalFile(
             @Parameter(description = "Nodo: ingest, replica1, replica2...", example = "replica1") @PathVariable String node,
-            @Parameter(description = "Nombre del archivo HTML", example = "index.html") @PathVariable String fileName) {
+            @Parameter(description = "Nombre o ruta del archivo", example = "index.html") @PathVariable String fileName) {
         try {
-            if (!NODE_PATTERN.matcher(node).matches()) {
+            if (!NODE_PATTERN.matcher(node).matches())
                 return ResponseEntity.badRequest().build();
-            }
 
             Path base = Paths.get(storageRoot, node).normalize();
             Path filePath = base.resolve(fileName).normalize();
 
             // Evita Path Traversal
-            if (!filePath.startsWith(base)) {
+            if (!filePath.startsWith(base))
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
 
             Resource resource = new FileSystemResource(filePath.toFile());
-            if (!resource.exists() || !resource.isReadable()) {
+            if (!resource.exists() || !resource.isReadable())
                 return ResponseEntity.notFound().build();
-            }
+
+            MediaType mediaType;
+            String lowerName = fileName.toLowerCase();
+
+            String ext = lowerName.substring(lowerName.lastIndexOf('.') + 1);
+            mediaType = switch (ext) {// Detectar dinámicamente el MIME type según la extensión del archivo
+                case "html" -> MediaType.TEXT_HTML;
+                case "css" -> MediaType.valueOf("text/css");
+                case "js" -> MediaType.valueOf("application/javascript");
+                case "json" -> MediaType.APPLICATION_JSON;
+                case "png" -> MediaType.IMAGE_PNG;
+                case "jpg", "jpeg" -> MediaType.IMAGE_JPEG;
+                default -> MediaType.APPLICATION_OCTET_STREAM;
+            };
 
             return ResponseEntity.ok()
-                    .contentType(MediaType.TEXT_HTML)
+                    .contentType(mediaType)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
                     .body(resource);
         } catch (Exception e) {

@@ -106,13 +106,6 @@ export default function HomeLanding() {
           </div>
         </div>
       </main>
-
-      {/* Pie de página */}
-      <footer className="relative z-10 w-full max-w-7xl mx-auto px-6 py-6 border-t border-gray-900 text-center text-sm text-gray-500">
-        <p>
-          © {new Date().getFullYear()} DockStream. Entorno de monitoreo privado.
-        </p>
-      </footer>
     </div>
   );
 }

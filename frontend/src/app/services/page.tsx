@@ -1,84 +1,18 @@
 "use client";
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
-  LayoutDashboard,
-  CheckSquare,
-  FileText,
-  FolderUp,
-  Search,
-  Bell,
-  Plus,
-  Trash2,
-  Clock,
-  Menu,
-  X,
-  Download,
-  Server,
-  Activity,
   RefreshCw,
   Layers,
   Cpu,
   Globe,
-  Terminal,
-  ExternalLink,
-  FileCode,
+  Server,
+  Zap,
+  FolderCode
 } from "lucide-react";
 import Header from "../component/Header";
-
-interface Task {
-  id: string;
-  title: string;
-  status: "todo" | "in_progress" | "done";
-  priority: "low" | "medium" | "high";
-  tag: string;
-}
-
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  date: string;
-}
-
-interface UploadedFile {
-  id: string;
-  name: string;
-  size: string;
-  type: string;
-  date: string;
-  content?: string;
-}
-
-interface DockerContainerStatus {
-  name: string;
-  status: string;
-  state: "running" | "restarting" | "stopped" | "error";
-  port?: string;
-  htmlFiles?: string[]; // Archivos HTML detectados en el almacenamiento del servicio
-  app?: string | null; // etiqueta mesh.app del contenedor
-  role?: "frontend" | "api" | "db" | string | null; // etiqueta mesh.role
-}
-
-interface AppStack {
-  stackName: string;
-  description: string;
-  containers: DockerContainerStatus[];
-}
-
-// Aplicación desplegada en el mesh: agrupa los contenedores con el mismo mesh.app
-interface MeshApp {
-  name: string;
-  parts: DockerContainerStatus[];
-  web?: DockerContainerStatus; // contenedor frontend con puerto publicado
-  healthy: boolean;
-}
-
-// Proyecto web (build de React/Next, HTML/CSS/JS) alojado en la carpeta de un nodo
-interface SiteInfo {
-  name: string;
-  url: string;
-}
+import { MeshAppsGrid } from "../component/MeshAppsGrid";
+import { StackTopologyGrid } from "../component/StackTopolgyGrid"
+import { DockerContainerStatus, AppStack, MeshApp, SiteInfo } from "../types";
 
 const MESH_HOST = "despacho-desktop-3basi77.tail645042.ts.net";
 const MESH_API = `http://${MESH_HOST}:8081`;
@@ -95,10 +29,9 @@ const isDatabaseContainer = (name: string): boolean =>
   /mysql|db|postgres/i.test(name);
 
 export default function UserHubDashboard() {
-  const [activeTab, setActiveTab] = useState<
+  const [activeTab] = useState<
     "dashboard" | "kanban" | "notes" | "files"
   >("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [containers, setContainers] = useState<DockerContainerStatus[]>([]);
   // Proyectos web de cada nodo: { ingest: [...], replica1: [...], ... }
@@ -106,19 +39,11 @@ export default function UserHubDashboard() {
   const [systemOnline, setSystemOnline] = useState<boolean>(false);
   const [loadingContainers, setLoadingContainers] = useState<boolean>(false);
 
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [files, setFiles] = useState<UploadedFile[]>([]);
-
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [newNoteTitle, setNewNoteTitle] = useState("");
-  const [newNoteContent, setNewNoteContent] = useState("");
-
   const fetchClusterStatus = async () => {
     setLoadingContainers(true);
     try {
       const res = await fetch(
-        "http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/cluster/services",
+        `${MESH_API}/api/cluster/services`,
       );
       if (res.ok) {
         const data: DockerContainerStatus[] = await res.json();
@@ -205,21 +130,19 @@ export default function UserHubDashboard() {
       },
     ];
 
-    if (otherContainers.length > 0) {
+    if (otherContainers.length > 0)
       stacks.push({
         stackName: "Edge & Miscellaneous",
         description: "Servicios de red, proxies o herramientas auxiliares",
         containers: otherContainers,
       });
-    }
 
     return stacks.filter(s => s.containers.length > 0);
   };
 
   // Abre en una pestaña nueva el proyecto web de un nodo (su index.html).
-  // Siempre consulta al backend del 8081, que lee la carpeta del nodo indicado.
   const handleOpenSite = (node: string, app: string) => {
-    window.open(`${MESH_API}/api/sites/${node}/${app}/`, "_blank", "noopener,noreferrer");
+    window.open(`${MESH_API}/api/sites/${node}/${app}/index.html`, "_blank", "noopener,noreferrer");
   };
 
   // Abre el frontend de una app del mesh en una nueva pestaña
@@ -228,12 +151,12 @@ export default function UserHubDashboard() {
   };
 
   return (
-    <div>
+    <div className="bg-slate-950">
       <div className="px-4 md:px-8 pt-6">
         <Header />
       </div>
 
-      <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto space-y-8">
+      <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto space-y-8 ">
         {activeTab === "dashboard" && (
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -295,110 +218,32 @@ export default function UserHubDashboard() {
               </div>
             </div>
 
-            {/* Aplicaciones del mesh (contenedores con etiqueta mesh.app) */}
-            {getApps().length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Aplicaciones</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {getApps().map((app) => (
-                    <div key={app.name} className="bg-slate-900/60 border border-slate-800/90 rounded-2xl p-5 flex flex-col gap-4 shadow-sm hover:border-slate-700 transition">
-                      <div className="flex items-center justify-between gap-3">
-                        <h4 className="font-semibold text-white text-base truncate">{app.name}</h4>
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full border ${app.healthy ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-amber-500/10 text-amber-400 border-amber-500/20"}`}>
-                          {app.healthy ? "Operativa" : "Degradada"}
-                        </span>
-                      </div>
-
-                      <div className="space-y-2 pt-2 border-t border-slate-800/80">
-                        {app.parts.map((part) => (
-                          <div key={part.name} className="flex items-center justify-between gap-3 text-xs">
-                            <div className="flex items-center gap-2 min-w-0">
-                              <span className={`h-2 w-2 shrink-0 rounded-full ${part.state === "running" ? "bg-emerald-500" : "bg-amber-500"}`}></span>
-                              <span className="text-slate-200 truncate">{part.name}</span>
-                            </div>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-950 text-slate-300 border border-slate-800 shrink-0">
-                              {part.role ?? "servicio"}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {app.web ? (
-                        <button
-                          onClick={() => handleOpenApp(app.web!.port as string)}
-                          className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition"
-                        >
-                          <ExternalLink size={14} />
-                          <span>Abrir app</span>
-                        </button>
-                      ) : (
-                        <span className="text-center text-[11px] text-slate-500">
-                          Sin frontend publicado (mesh.role=frontend con puerto)
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
+            {/* SECCIÓN 1: Aplicaciones Dinámicas del Mesh */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <Zap size={12} /> Servicios Dinámicos
+                </span>
+                <span className="text-xs text-slate-400">Apps independientes con puertos expuestos y contenedores propios</span>
               </div>
-            )}
+              <MeshAppsGrid apps={getApps()} onOpenApp={handleOpenApp} />
+            </div>
 
-            {/* Stacks Topology View */}
-            <div className="space-y-6">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">Topología de Stacks</h3>
-              
-              {containers.length === 0 ? (
-                <div className="text-center py-12 text-slate-500 text-sm border border-dashed border-slate-800 rounded-2xl bg-slate-950/40">
-                  No se detectaron servicios en la malla. Comprueba que el backend y Tailscale estén operativos.
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {getAppStacks().map((stack, sIdx) => (
-                    <div key={sIdx} className="bg-slate-900/60 border border-slate-800/90 rounded-2xl p-5 flex flex-col justify-between gap-4 shadow-sm hover:border-slate-700 transition">
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-semibold text-white text-base">{stack.stackName}</h4>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                            {stack.containers.length} serv.
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-400">{stack.description}</p>
-                      </div>
-
-                      <div className="space-y-2.5 pt-2 border-t border-slate-800/80">
-                        {stack.containers.map((container, cIdx) => (
-                          <div key={cIdx} className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/60 flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <span className={`h-2 w-2 shrink-0 rounded-full ${container.state === "running" ? "bg-emerald-500 shadow-sm shadow-emerald-500/50" : "bg-amber-500"}`}></span>
-                              <span className="text-xs font-medium text-slate-200 truncate">{container.name}</span>
-                            </div>
-                            <div className="flex flex-wrap items-center justify-end gap-2">
-                              {container.port && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
-                                  :{container.port}
-                                </span>
-                              )}
-                              {/* Un botón por proyecto web del nodo: abre su propio index.html (no aplica a bases de datos) */}
-                              {!isDatabaseContainer(container.name) &&
-                                (sites[nodeFromName(container.name)] ?? []).map((site) => (
-                                  <button
-                                    key={site.name}
-                                    onClick={() => handleOpenSite(nodeFromName(container.name), site.name)}
-                                    title={`Abrir ${site.name} en nueva pestaña`}
-                                    className="px-2 py-1 rounded-lg bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/20 transition flex items-center gap-1 text-[10px]"
-                                  >
-                                    <FileCode size={12} />
-                                    <span className="max-w-[90px] truncate">{site.name}</span>
-                                    <ExternalLink size={10} />
-                                  </button>
-                                ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            {/* SECCIÓN 2: Sitios Estáticos y Stacks de Infraestructura */}
+            <div className="space-y-3 pt-4 border-t border-slate-800/60">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                  <FolderCode size={12} /> Sitios Estáticos & Stacks
+                </span>
+                <span className="text-xs text-slate-400">Herramientas servidas desde volúmenes compartidos y bases de infraestructura</span>
+              </div>
+              <StackTopologyGrid
+                stacks={getAppStacks()}
+                sites={sites}
+                nodeFromName={nodeFromName}
+                isDatabaseContainer={isDatabaseContainer}
+                onOpenSite={handleOpenSite}
+              />
             </div>
           </div>
         )}

@@ -116,10 +116,9 @@ public class ClusterOrchestratorService {
             }
 
             int exit = process.waitFor();
-            if (exit != 0 || (containersList.isEmpty() && !unparsed.isEmpty())) {
+            if (exit != 0 || (containersList.isEmpty() && !unparsed.isEmpty()))
                 throw new IllegalStateException(
                         "docker ps falló (exit " + exit + "): " + String.join(" / ", unparsed));
-            }
         } catch (IOException e) {
             throw new IllegalStateException("No se pudo ejecutar docker: " + e.getMessage(), e);
         } catch (InterruptedException e) {
