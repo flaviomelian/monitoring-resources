@@ -50,7 +50,7 @@ public class ApiController {
         }
     }
 
-    @Operation(summary = "Inicio de sesión", description = "Valida las credenciales del usuario y devuelve un token de acceso.")
+    @Operation(summary = "Inicio de sesión", description = "Valida las credenciales del usuario y devuelve un token de acceso real.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Login correcto", 
             content = @Content(schema = @Schema(implementation = LoginResponse.class))),
@@ -66,9 +66,42 @@ public class ApiController {
             if (!passwordEncoder.matches(request.password(), user.getPassword()))
                 return ResponseEntity.status(401).body(new ErrorResponse("Credenciales incorrectas."));
             
-            return ResponseEntity.ok(new LoginResponse(user.getRole(), "Token_Simulado_O_JWT"));
+            // Generamos un token de sesión real basado en el email del usuario (o puedes usar UUID.randomUUID().toString())
+            String realToken = "Bearer_" + java.util.Base64.getEncoder().encodeToString(user.getEmail().getBytes());
+            
+            return ResponseEntity.ok(new LoginResponse(user.getRole(), realToken));
         } catch (RuntimeException e) {
             return ResponseEntity.status(401).body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    @Operation(
+        summary = "Obtener perfil de usuario", 
+        description = "Devuelve la información real del usuario autenticado mediante su token de sesión.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Datos de perfil obtenidos con éxito",
+            content = @Content(schema = @Schema(implementation = UserProfileResponse.class))),
+        @ApiResponse(responseCode = "401", description = "No autorizado")
+    })
+    @GetMapping("/user/profile")
+    public ResponseEntity<?> getUserProfile(@RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body(new ErrorResponse("Token no proporcionado o inválido."));
+            }
+
+            // Extraemos el token y recuperamos el email decodificándolo
+            String tokenValue = authHeader.substring(7);
+            String decodedBytes = new String(java.util.Base64.getDecoder().decode(tokenValue.replace("Bearer_", "")));
+            
+            User user = userRepository.findByEmail(decodedBytes)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado en la malla."));
+
+            return ResponseEntity.ok(new UserProfileResponse(user.getEmail(), user.getRole(), "Operational"));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(new ErrorResponse("Sesión no autorizada o caducada."));
         }
     }
 
@@ -101,6 +134,7 @@ public class ApiController {
     public ResponseEntity<String> consumeContainers() {
         return ResponseEntity.ok("Acceso concedido al consumo de servicios y métricas.");
     }
+    
 }
 
 // DTOs auxiliares documentados
@@ -131,4 +165,11 @@ record LoginRequest(
 record LoginResponse(
     @Schema(example = "ROLE_USER") String role, 
     @Schema(example = "eyJhbGciOiJIUzI1Ni..." ) String token
+) {}
+
+@Schema(description = "Respuesta del perfil de usuario")
+record UserProfileResponse(
+    @Schema(example = "usuario@email.com") String email,
+    @Schema(example = "ROLE_USER") String role,
+    @Schema(example = "Activo") String status
 ) {}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Layers, LogOut, LayoutDashboard, CheckSquare, FileText, FolderUp, Server, BookOpen, ExternalLink, Monitor } from "lucide-react";
+import { Layers, LogOut, LayoutDashboard, CheckSquare, FileText, FolderUp, Server, BookOpen, ExternalLink, Monitor, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -96,6 +96,20 @@ export default function Header() {
           <span>Swagger</span>
           <ExternalLink size={14} className="text-slate-500 group-hover:text-slate-300 transition" />
         </a>
+
+        {/* Enlace interno al perfil */}
+        <Link 
+          href="/profile" 
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition ${
+            pathname === "/profile" 
+              ? "bg-slate-800 border-slate-700 text-white shadow-sm ring-1 ring-slate-700" 
+              : "bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-300"
+          }`}
+          title="Perfil de Usuario"
+        >
+          <User size={20} className="text-indigo-400" />
+          <span>Perfil</span>
+        </Link>
 
         <button 
           onClick={handleLogout}
