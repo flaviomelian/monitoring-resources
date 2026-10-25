@@ -1,0 +1,1066 @@
+
+> frontend@0.1.0 dev
+> next dev -H 0.0.0.0 --hostname despacho-desktop-3basi77.tail645042.ts.net
+
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://despacho-desktop-3basi77.tail645042.ts.net:3000
+- Network:       http://despacho-desktop-3basi77.tail645042.ts.net:3000
+✓ Ready in 2.8s
+
+ GET / 200 in 541ms (next.js: 360ms, application-code: 181ms)
+ GET /login 200 in 57ms (next.js: 33ms, application-code: 24ms)
+ GET /dashboard 200 in 207ms (next.js: 30ms, application-code: 177ms)
+ GET /services 200 in 53ms (next.js: 35ms, application-code: 18ms)
+ GET /services 200 in 26ms (next.js: 6ms, application-code: 20ms)
+✓ Compiled in 1493ms
+ GET /services 200 in 94ms (next.js: 57ms, application-code: 37ms)
+ GET /dashboard 200 in 61ms (next.js: 44ms, application-code: 18ms)
+ GET /services 200 in 22ms (next.js: 5ms, application-code: 17ms)
+ GET /services 200 in 105ms (next.js: 5ms, application-code: 100ms)
+ GET /dashboard 200 in 23ms (next.js: 5ms, application-code: 18ms)
+ GET /services 200 in 32ms (next.js: 5ms, application-code: 27ms)
+ GET /services 200 in 38ms (next.js: 4ms, application-code: 34ms)
+ GET /services 200 in 46ms (next.js: 5ms, application-code: 41ms)
+⨯ ./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  [90m10 |[0m [36mimport[0m [33mHeader[0m [36mfrom[0m [32m"../component/Header"[0m;
+  [90m11 |[0m [36mimport[0m { [33mMeshAppsGrid[0m } [36mfrom[0m [32m"../component/MeshAppsGrid"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mStackTopologyGrid[0m } [36mfrom[0m [32m"../component/StackTopolgyGrid"[0m
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m [36mimport[0m { [33mDockerContainerStatus[0m, [33mAppStack[0m, [33mMeshApp[0m, [33mSiteInfo[0m } [36mfrom[0m [32m"../types"[0m;
+  [90m14 |[0m
+  [90m15 |[0m [36mconst[0m [33mMESH_HOST[0m = [32m"despacho-desktop-3basi77.tail645042.ts.net"[0m;
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-client] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component]
+
+
+
+./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  [90m10 |[0m [36mimport[0m [33mHeader[0m [36mfrom[0m [32m"../component/Header"[0m;
+  [90m11 |[0m [36mimport[0m { [33mMeshAppsGrid[0m } [36mfrom[0m [32m"../component/MeshAppsGrid"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mStackTopologyGrid[0m } [36mfrom[0m [32m"../component/StackTopolgyGrid"[0m
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m [36mimport[0m { [33mDockerContainerStatus[0m, [33mAppStack[0m, [33mMeshApp[0m, [33mSiteInfo[0m } [36mfrom[0m [32m"../types"[0m;
+  [90m14 |[0m
+  [90m15 |[0m [36mconst[0m [33mMESH_HOST[0m = [32m"despacho-desktop-3basi77.tail645042.ts.net"[0m;
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-ssr] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component]
+
+
+ GET /services 500 in 588ms (next.js: 440ms, application-code: 147ms)
+⨯ ./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  [90m10 |[0m [36mimport[0m [33mHeader[0m [36mfrom[0m [32m"../component/Header"[0m;
+  [90m11 |[0m [36mimport[0m { [33mMeshAppsGrid[0m } [36mfrom[0m [32m"../component/MeshAppsGrid"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mStackTopologyGrid[0m } [36mfrom[0m [32m"../component/StackTopolgyGrid"[0m
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m [36mimport[0m { [33mDockerContainerStatus[0m, [33mAppStack[0m, [33mMeshApp[0m, [33mSiteInfo[0m } [36mfrom[0m [32m"../types"[0m;
+  [90m14 |[0m
+  [90m15 |[0m [36mconst[0m [33mMESH_HOST[0m = [32m"despacho-desktop-3basi77.tail645042.ts.net"[0m;
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-client] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component]
+
+
+
+./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  [90m10 |[0m [36mimport[0m [33mHeader[0m [36mfrom[0m [32m"../component/Header"[0m;
+  [90m11 |[0m [36mimport[0m { [33mMeshAppsGrid[0m } [36mfrom[0m [32m"../component/MeshAppsGrid"[0m;
+[31m[1m>[0m [90m12 |[0m [36mimport[0m { [33mStackTopologyGrid[0m } [36mfrom[0m [32m"../component/StackTopolgyGrid"[0m
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m [36mimport[0m { [33mDockerContainerStatus[0m, [33mAppStack[0m, [33mMeshApp[0m, [33mSiteInfo[0m } [36mfrom[0m [32m"../types"[0m;
+  [90m14 |[0m
+  [90m15 |[0m [36mconst[0m [33mMESH_HOST[0m = [32m"despacho-desktop-3basi77.tail645042.ts.net"[0m;
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-ssr] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component]
+
+
+ GET /services 500 in 22ms (next.js: 12ms, application-code: 10ms)
+[browser] Uncaught Error: ./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  10 | import Header from "../component/Header";
+  11 | import { MeshAppsGrid } from "../component/MeshAppsGrid";
+> 12 | import { StackTopologyGrid } from "../component/StackTopolgyGrid"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import { DockerContainerStatus, AppStack, MeshApp, SiteInfo } from "../types";
+  14 |
+  15 | const MESH_HOST = "despacho-desktop-3basi77.tail645042.ts.net";
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-client] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/app/services/page.tsx:12:1)
+    at <unknown> (Error: (./src/app/services/page.tsx:12:1)
+[browser] ./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  10 | import Header from "../component/Header";
+  11 | import { MeshAppsGrid } from "../component/MeshAppsGrid";
+> 12 | import { StackTopologyGrid } from "../component/StackTopolgyGrid"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import { DockerContainerStatus, AppStack, MeshApp, SiteInfo } from "../types";
+  14 |
+  15 | const MESH_HOST = "despacho-desktop-3basi77.tail645042.ts.net";
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-client] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component] 
+[browser] ./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  10 | import Header from "../component/Header";
+  11 | import { MeshAppsGrid } from "../component/MeshAppsGrid";
+> 12 | import { StackTopologyGrid } from "../component/StackTopolgyGrid"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import { DockerContainerStatus, AppStack, MeshApp, SiteInfo } from "../types";
+  14 |
+  15 | const MESH_HOST = "despacho-desktop-3basi77.tail645042.ts.net";
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-ssr] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component] 
+[browser] ./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  10 | import Header from "../component/Header";
+  11 | import { MeshAppsGrid } from "../component/MeshAppsGrid";
+> 12 | import { StackTopologyGrid } from "../component/StackTopolgyGrid"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import { DockerContainerStatus, AppStack, MeshApp, SiteInfo } from "../types";
+  14 |
+  15 | const MESH_HOST = "despacho-desktop-3basi77.tail645042.ts.net";
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-client] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component] 
+[browser] ./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  10 | import Header from "../component/Header";
+  11 | import { MeshAppsGrid } from "../component/MeshAppsGrid";
+> 12 | import { StackTopologyGrid } from "../component/StackTopolgyGrid"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import { DockerContainerStatus, AppStack, MeshApp, SiteInfo } from "../types";
+  14 |
+  15 | const MESH_HOST = "despacho-desktop-3basi77.tail645042.ts.net";
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-ssr] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component] 
+[browser] ./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  10 | import Header from "../component/Header";
+  11 | import { MeshAppsGrid } from "../component/MeshAppsGrid";
+> 12 | import { StackTopologyGrid } from "../component/StackTopolgyGrid"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import { DockerContainerStatus, AppStack, MeshApp, SiteInfo } from "../types";
+  14 |
+  15 | const MESH_HOST = "despacho-desktop-3basi77.tail645042.ts.net";
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-client] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component] 
+[browser] ./src/app/services/page.tsx:12:1
+Export StackTopologyGrid doesn't exist in target module
+  10 | import Header from "../component/Header";
+  11 | import { MeshAppsGrid } from "../component/MeshAppsGrid";
+> 12 | import { StackTopologyGrid } from "../component/StackTopolgyGrid"
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  13 | import { DockerContainerStatus, AppStack, MeshApp, SiteInfo } from "../types";
+  14 |
+  15 | const MESH_HOST = "despacho-desktop-3basi77.tail645042.ts.net";
+
+The export StackTopologyGrid was not found in module [project]/src/app/component/StackTopolgyGrid.tsx [app-ssr] (ecmascript).
+Did you mean to import StacksTopologyGrid?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./src/app/services/page.tsx [Client Component Browser]
+    ./src/app/services/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/app/services/page.tsx [Client Component SSR]
+    ./src/app/services/page.tsx [Server Component] 
+ GET /services 200 in 107ms (next.js: 39ms, application-code: 68ms)
+ GET /dashboard 200 in 26ms (next.js: 9ms, application-code: 17ms)
+ GET /services 200 in 25ms (next.js: 5ms, application-code: 20ms)
+ GET /dashboard 200 in 23ms (next.js: 4ms, application-code: 19ms)
+ GET /services 200 in 21ms (next.js: 5ms, application-code: 15ms)
+ GET /services 200 in 45ms (next.js: 4ms, application-code: 41ms)
+ GET /dashboard 200 in 24ms (next.js: 4ms, application-code: 20ms)
+ GET /services 200 in 20ms (next.js: 5ms, application-code: 15ms)
+ GET /dashboard 200 in 22ms (next.js: 4ms, application-code: 17ms)
+[browser] Error devorando nodos del backend: TypeError: Failed to fetch
+    at Dashboard.useEffect.fetchClusterNodes (src/app/component/Dashboard.tsx:47:32)
+  45 |       try {
+  46 |         // 1. Obtener la lista de nodos registrados activos en BD
+> 47 |         const nodesRes = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:80...
+     |                                ^
+  48 |         if (!nodesRes.ok)
+  49 |           throw new Error(`Error obteniendo nodos: ${nodesRes.status}`);
+  50 |         const nodesList = (await nodesRes.json()) as ServerNodeData[]; (src/app/component/Dashboard.tsx:117:17)
+[browser] Error cargando la media del clúster para la tabla: TypeError: Failed to fetch
+    at MetricsTable.useEffect.fetchAverageMetrics (src/app/component/MetricsTable.tsx:12:37)
+  10 |     const fetchAverageMetrics = async () => {
+  11 |       try {
+> 12 |         const avgMetricsRes = await fetch(
+     |                                     ^
+  13 |           "http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/metrics/history/aver...
+  14 |         );
+  15 |         if (avgMetricsRes.ok) { (src/app/component/MetricsTable.tsx:22:17)
+[browser] Error cargando la media del clúster: TypeError: Failed to fetch
+    at GlobalHistoryChart.useEffect.fetchAverageMetrics (src/app/component/GlobalHistoryChart.tsx:31:37)
+  29 |     const fetchAverageMetrics = async () => {
+  30 |       try {
+> 31 |         const avgMetricsRes = await fetch(
+     |                                     ^
+  32 |           "http://localhost:8081/api/metrics/history/average"
+  33 |         );
+  34 |         if (avgMetricsRes.ok) { (src/app/component/GlobalHistoryChart.tsx:41:17)
+[browser] Error devorando nodos del backend: TypeError: Failed to fetch
+    at Dashboard.useEffect.fetchClusterNodes (src/app/component/Dashboard.tsx:47:32)
+  45 |       try {
+  46 |         // 1. Obtener la lista de nodos registrados activos en BD
+> 47 |         const nodesRes = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:80...
+     |                                ^
+  48 |         if (!nodesRes.ok)
+  49 |           throw new Error(`Error obteniendo nodos: ${nodesRes.status}`);
+  50 |         const nodesList = (await nodesRes.json()) as ServerNodeData[]; (src/app/component/Dashboard.tsx:117:17)
+[browser] Error devorando nodos del backend: TypeError: Failed to fetch
+    at Dashboard.useEffect.fetchClusterNodes (src/app/component/Dashboard.tsx:47:32)
+  45 |       try {
+  46 |         // 1. Obtener la lista de nodos registrados activos en BD
+> 47 |         const nodesRes = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:80...
+     |                                ^
+  48 |         if (!nodesRes.ok)
+  49 |           throw new Error(`Error obteniendo nodos: ${nodesRes.status}`);
+  50 |         const nodesList = (await nodesRes.json()) as ServerNodeData[]; (src/app/component/Dashboard.tsx:117:17)
+[browser] Error cargando la media del clúster para la tabla: TypeError: Failed to fetch
+    at MetricsTable.useEffect.fetchAverageMetrics (src/app/component/MetricsTable.tsx:12:37)
+  10 |     const fetchAverageMetrics = async () => {
+  11 |       try {
+> 12 |         const avgMetricsRes = await fetch(
+     |                                     ^
+  13 |           "http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/metrics/history/aver...
+  14 |         );
+  15 |         if (avgMetricsRes.ok) { (src/app/component/MetricsTable.tsx:22:17)
+[browser] Error devorando nodos del backend: TypeError: Failed to fetch
+    at Dashboard.useEffect.fetchClusterNodes (src/app/component/Dashboard.tsx:47:32)
+  45 |       try {
+  46 |         // 1. Obtener la lista de nodos registrados activos en BD
+> 47 |         const nodesRes = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:80...
+     |                                ^
+  48 |         if (!nodesRes.ok)
+  49 |           throw new Error(`Error obteniendo nodos: ${nodesRes.status}`);
+  50 |         const nodesList = (await nodesRes.json()) as ServerNodeData[]; (src/app/component/Dashboard.tsx:117:17)
+[browser] Error cargando la media del clúster: TypeError: Failed to fetch
+    at GlobalHistoryChart.useEffect.fetchAverageMetrics (src/app/component/GlobalHistoryChart.tsx:31:37)
+  29 |     const fetchAverageMetrics = async () => {
+  30 |       try {
+> 31 |         const avgMetricsRes = await fetch(
+     |                                     ^
+  32 |           "http://localhost:8081/api/metrics/history/average"
+  33 |         );
+  34 |         if (avgMetricsRes.ok) { (src/app/component/GlobalHistoryChart.tsx:41:17)
+[browser] Error devorando nodos del backend: TypeError: Failed to fetch
+    at Dashboard.useEffect.fetchClusterNodes (src/app/component/Dashboard.tsx:47:32)
+  45 |       try {
+  46 |         // 1. Obtener la lista de nodos registrados activos en BD
+> 47 |         const nodesRes = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:80...
+     |                                ^
+  48 |         if (!nodesRes.ok)
+  49 |           throw new Error(`Error obteniendo nodos: ${nodesRes.status}`);
+  50 |         const nodesList = (await nodesRes.json()) as ServerNodeData[]; (src/app/component/Dashboard.tsx:117:17)
+ GET /dashboard 200 in 367ms (next.js: 8ms, application-code: 359ms)
+ GET /services 200 in 21ms (next.js: 6ms, application-code: 15ms)
+ GET /services 200 in 49ms (next.js: 5ms, application-code: 45ms)
+ GET /services 200 in 59ms (next.js: 9ms, application-code: 50ms)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+ GET /services 200 in 54ms (next.js: 6ms, application-code: 48ms)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+    at UserHubDashboard.useEffect.loadStatus (src/app/services/page.tsx:82:42)
+    at UserHubDashboard.useEffect (src/app/services/page.tsx:83:5)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+ GET /services 200 in 45ms (next.js: 5ms, application-code: 41ms)
+ GET /services 200 in 46ms (next.js: 5ms, application-code: 41ms)
+ GET /services 200 in 42ms (next.js: 4ms, application-code: 38ms)
+ GET /services 200 in 56ms (next.js: 7ms, application-code: 49ms)
+ GET /dashboard 200 in 21ms (next.js: 5ms, application-code: 16ms)
+ GET /services 200 in 23ms (next.js: 6ms, application-code: 17ms)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+ GET /services 200 in 99ms (next.js: 14ms, application-code: 84ms)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+    at UserHubDashboard.useEffect.loadStatus (src/app/services/page.tsx:82:42)
+    at UserHubDashboard.useEffect (src/app/services/page.tsx:83:5)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+ GET /services 200 in 125ms (next.js: 15ms, application-code: 110ms)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+    at UserHubDashboard.useEffect.loadStatus (src/app/services/page.tsx:82:42)
+    at UserHubDashboard.useEffect (src/app/services/page.tsx:83:5)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+ GET / 200 in 116ms (next.js: 33ms, application-code: 82ms)
+ GET /login 200 in 32ms (next.js: 17ms, application-code: 16ms)
+ GET /dashboard 200 in 49ms (next.js: 4ms, application-code: 44ms)
+ GET /kanban 200 in 48ms (next.js: 31ms, application-code: 17ms)
+ GET /notes 200 in 54ms (next.js: 34ms, application-code: 20ms)
+ GET /files 200 in 57ms (next.js: 32ms, application-code: 24ms)
+ GET /services 200 in 22ms (next.js: 6ms, application-code: 16ms)
+ GET /services 200 in 48ms (next.js: 5ms, application-code: 43ms)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+ GET /services 200 in 59ms (next.js: 11ms, application-code: 48ms)
+ GET /dashboard 200 in 26ms (next.js: 6ms, application-code: 20ms)
+ GET /services 200 in 44ms (next.js: 13ms, application-code: 31ms)
+ GET /dashboard 200 in 31ms (next.js: 6ms, application-code: 25ms)
+ GET /services 200 in 67ms (next.js: 9ms, application-code: 58ms)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+[browser] Error al conectar con la malla del clúster: TypeError: Failed to fetch
+    at fetchClusterStatus (src/app/services/page.tsx:43:25)
+  41 |     setLoadingContainers(true);
+  42 |     try {
+> 43 |       const res = await fetch(
+     |                         ^
+  44 |         `${MESH_API}/api/cluster/services`,
+  45 |       );
+  46 |       if (res.ok) { (src/app/services/page.tsx:74:15)
+ GET / 200 in 39ms (next.js: 6ms, application-code: 33ms)
+ GET / 200 in 66ms (next.js: 9ms, application-code: 58ms)
+ GET /login 200 in 37ms (next.js: 9ms, application-code: 27ms)
+[browser] Error en el fetch: TypeError: Failed to fetch
+    at handleLogin (src/app/login/page.tsx:24:25)
+  22 |
+  23 |     try {
+> 24 |       const res = await fetch("http://despacho-desktop-3basi77.tail645042.ts.net:8081/api/...
+     |                         ^
+  25 |         method: "POST",
+  26 |         headers: {
+  27 |           "Content-Type": "application/json", (src/app/login/page.tsx:53:15)
+ GET /dashboard 200 in 50ms (next.js: 5ms, application-code: 45ms)
+ GET /services 200 in 22ms (next.js: 5ms, application-code: 17ms)
+✓ Compiled in 216ms
+ GET /services 200 in 170ms (next.js: 130ms, application-code: 41ms)
+✓ Compiled in 282ms
+ GET /services 200 in 238ms (next.js: 123ms, application-code: 116ms)
+ GET /services 200 in 73ms (next.js: 6ms, application-code: 68ms)
+ GET /services 200 in 34ms (next.js: 6ms, application-code: 28ms)
+✓ Compiled in 153ms
+ GET /services 200 in 139ms (next.js: 106ms, application-code: 34ms)
+ GET /dashboard 200 in 38ms (next.js: 17ms, application-code: 21ms)
+ GET /services 200 in 26ms (next.js: 6ms, application-code: 20ms)
+ GET /login 200 in 66ms (next.js: 35ms, application-code: 31ms)
+ GET /dashboard 200 in 273ms (next.js: 6ms, application-code: 267ms)
+ GET /kanban 200 in 34ms (next.js: 16ms, application-code: 17ms)
+ GET /notes 200 in 39ms (next.js: 19ms, application-code: 21ms)
+ GET /dashboard 200 in 30ms (next.js: 6ms, application-code: 24ms)
+ GET /frontend-doc 200 in 57ms (next.js: 35ms, application-code: 21ms)
+ GET /files 200 in 41ms (next.js: 22ms, application-code: 19ms)
+ GET /services 200 in 27ms (next.js: 8ms, application-code: 18ms)
+ GET /dashboard 200 in 22ms (next.js: 5ms, application-code: 17ms)
+ GET /kanban 200 in 23ms (next.js: 5ms, application-code: 18ms)
+ GET /notes 200 in 25ms (next.js: 5ms, application-code: 19ms)
+ GET /services 200 in 23ms (next.js: 5ms, application-code: 18ms)
+ GET /frontend-doc 200 in 22ms (next.js: 5ms, application-code: 17ms)
+ GET /dashboard 200 in 24ms (next.js: 5ms, application-code: 18ms)
+ GET /kanban 200 in 22ms (next.js: 5ms, application-code: 17ms)
+ GET /notes 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /files 200 in 19ms (next.js: 4ms, application-code: 14ms)
+ GET /notes 200 in 18ms (next.js: 4ms, application-code: 14ms)
+ GET /kanban 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /dashboard 200 in 20ms (next.js: 5ms, application-code: 15ms)
+✓ Compiled in 176ms
+ GET /dashboard 200 in 59ms (next.js: 7ms, application-code: 51ms)
+✓ Compiled in 614ms
+ GET /dashboard 200 in 1411ms (next.js: 1013ms, application-code: 399ms)
+ GET /dashboard 200 in 360ms (next.js: 115ms, application-code: 245ms)
+ GET /dashboard 200 in 176ms (next.js: 9ms, application-code: 168ms)
+ GET /dashboard 200 in 175ms (next.js: 68ms, application-code: 107ms)
+ GET /dashboard 200 in 176ms (next.js: 36ms, application-code: 140ms)
+ GET /dashboard 200 in 217ms (next.js: 98ms, application-code: 118ms)
+ GET /dashboard 200 in 467ms (next.js: 6ms, application-code: 460ms)
+ GET /dashboard 200 in 475ms (next.js: 9ms, application-code: 465ms)
+ GET /dashboard 200 in 141ms (next.js: 9ms, application-code: 132ms)
+ GET /dashboard 200 in 439ms (next.js: 34ms, application-code: 405ms)
+ GET /dashboard 200 in 439ms (next.js: 59ms, application-code: 380ms)
+ GET /dashboard 200 in 58ms (next.js: 8ms, application-code: 50ms)
+ GET /dashboard 200 in 451ms (next.js: 8ms, application-code: 443ms)
+ GET /kanban 200 in 94ms (next.js: 69ms, application-code: 25ms)
+ GET /dashboard 200 in 27ms (next.js: 6ms, application-code: 21ms)
+✓ Compiled in 143ms
+ GET /dashboard 200 in 335ms (next.js: 96ms, application-code: 239ms)
+ GET /dashboard 200 in 196ms (next.js: 9ms, application-code: 188ms)
+ GET /dashboard 200 in 141ms (next.js: 51ms, application-code: 90ms)
+ GET /dashboard 200 in 142ms (next.js: 12ms, application-code: 130ms)
+ GET /dashboard 200 in 140ms (next.js: 107ms, application-code: 33ms)
+ GET /dashboard 200 in 141ms (next.js: 80ms, application-code: 61ms)
+ GET /dashboard 200 in 346ms (next.js: 128ms, application-code: 218ms)
+ GET /dashboard 200 in 181ms (next.js: 5ms, application-code: 176ms)
+ GET /dashboard 200 in 173ms (next.js: 7ms, application-code: 166ms)
+ GET /dashboard 200 in 173ms (next.js: 79ms, application-code: 94ms)
+ GET /dashboard 200 in 174ms (next.js: 37ms, application-code: 137ms)
+ GET /dashboard 200 in 174ms (next.js: 105ms, application-code: 69ms)
+ GET /dashboard 200 in 68ms (next.js: 7ms, application-code: 62ms)
+ GET /dashboard 200 in 35ms (next.js: 7ms, application-code: 28ms)
+ GET /dashboard 200 in 33ms (next.js: 6ms, application-code: 27ms)
+ GET /kanban 200 in 120ms (next.js: 86ms, application-code: 34ms)
+ GET /notes 200 in 104ms (next.js: 73ms, application-code: 31ms)
+ GET /files 200 in 100ms (next.js: 76ms, application-code: 24ms)
+ GET /dashboard 200 in 21ms (next.js: 4ms, application-code: 17ms)
+ GET /services 200 in 104ms (next.js: 75ms, application-code: 29ms)
+ GET /frontend-doc 200 in 130ms (next.js: 101ms, application-code: 29ms)
+ GET /frontend-doc 200 in 291ms (next.js: 93ms, application-code: 197ms)
+ GET /frontend-doc 200 in 161ms (next.js: 7ms, application-code: 154ms)
+ GET /frontend-doc 200 in 148ms (next.js: 29ms, application-code: 119ms)
+ GET /frontend-doc 200 in 150ms (next.js: 7ms, application-code: 143ms)
+ GET /frontend-doc 200 in 149ms (next.js: 55ms, application-code: 95ms)
+ GET /frontend-doc 200 in 96ms (next.js: 5ms, application-code: 91ms)
+ GET /frontend-doc 200 in 109ms (next.js: 6ms, application-code: 104ms)
+ GET /frontend-doc 200 in 82ms (next.js: 8ms, application-code: 74ms)
+ GET /frontend-doc 200 in 49ms (next.js: 9ms, application-code: 41ms)
+✓ Compiled in 155ms
+ GET /frontend-doc 200 in 350ms (next.js: 81ms, application-code: 268ms)
+ GET /frontend-doc 200 in 255ms (next.js: 84ms, application-code: 170ms)
+ GET /frontend-doc 200 in 131ms (next.js: 7ms, application-code: 124ms)
+ GET /frontend-doc 200 in 130ms (next.js: 30ms, application-code: 101ms)
+ GET /frontend-doc 200 in 104ms (next.js: 5ms, application-code: 99ms)
+ GET /frontend-doc 200 in 102ms (next.js: 5ms, application-code: 97ms)
+ GET /frontend-doc 200 in 103ms (next.js: 27ms, application-code: 75ms)
+ GET /frontend-doc 200 in 58ms (next.js: 6ms, application-code: 52ms)
+ GET /frontend-doc 200 in 32ms (next.js: 5ms, application-code: 26ms)
+ GET /frontend-doc 200 in 301ms (next.js: 91ms, application-code: 210ms)
+ GET /frontend-doc 200 in 216ms (next.js: 5ms, application-code: 211ms)
+ GET /frontend-doc 200 in 192ms (next.js: 6ms, application-code: 186ms)
+ GET /frontend-doc 200 in 192ms (next.js: 26ms, application-code: 166ms)
+ GET /frontend-doc 200 in 221ms (next.js: 49ms, application-code: 171ms)
+ GET /frontend-doc 200 in 221ms (next.js: 95ms, application-code: 126ms)
+ GET /frontend-doc 200 in 101ms (next.js: 7ms, application-code: 94ms)
+ GET /frontend-doc 200 in 66ms (next.js: 7ms, application-code: 60ms)
+ GET /frontend-doc 200 in 32ms (next.js: 5ms, application-code: 27ms)
+ GET /frontend-doc 200 in 252ms (next.js: 92ms, application-code: 160ms)
+ GET /frontend-doc 200 in 133ms (next.js: 5ms, application-code: 128ms)
+ GET /frontend-doc 200 in 122ms (next.js: 5ms, application-code: 117ms)
+ GET /frontend-doc 200 in 122ms (next.js: 23ms, application-code: 99ms)
+ GET /frontend-doc 200 in 141ms (next.js: 61ms, application-code: 81ms)
+ GET /frontend-doc 200 in 142ms (next.js: 41ms, application-code: 101ms)
+ GET /frontend-doc 200 in 80ms (next.js: 6ms, application-code: 75ms)
+ GET /frontend-doc 200 in 48ms (next.js: 5ms, application-code: 42ms)
+ GET /frontend-doc 200 in 25ms (next.js: 5ms, application-code: 20ms)
+ GET /frontend-doc 200 in 298ms (next.js: 93ms, application-code: 205ms)
+ GET /frontend-doc 200 in 195ms (next.js: 6ms, application-code: 189ms)
+ GET /frontend-doc 200 in 155ms (next.js: 7ms, application-code: 147ms)
+ GET /frontend-doc 200 in 154ms (next.js: 57ms, application-code: 97ms)
+ GET /frontend-doc 200 in 155ms (next.js: 33ms, application-code: 122ms)
+ GET /frontend-doc 200 in 155ms (next.js: 93ms, application-code: 62ms)
+ GET /frontend-doc 200 in 89ms (next.js: 5ms, application-code: 84ms)
+ GET /frontend-doc 200 in 59ms (next.js: 8ms, application-code: 52ms)
+ GET /frontend-doc 200 in 28ms (next.js: 5ms, application-code: 23ms)
+ GET /frontend-doc 200 in 153ms (next.js: 4ms, application-code: 149ms)
+ GET /frontend-doc 200 in 276ms (next.js: 92ms, application-code: 184ms)
+ GET /frontend-doc 200 in 186ms (next.js: 6ms, application-code: 180ms)
+ GET /frontend-doc 200 in 152ms (next.js: 6ms, application-code: 146ms)
+ GET /frontend-doc 200 in 151ms (next.js: 52ms, application-code: 100ms)
+ GET /frontend-doc 200 in 152ms (next.js: 75ms, application-code: 76ms)
+ GET /frontend-doc 200 in 153ms (next.js: 30ms, application-code: 123ms)
+ GET /frontend-doc 200 in 94ms (next.js: 6ms, application-code: 88ms)
+ GET /frontend-doc 200 in 59ms (next.js: 8ms, application-code: 51ms)
+ GET /frontend-doc 200 in 31ms (next.js: 5ms, application-code: 26ms)
+ GET /frontend-doc 200 in 253ms (next.js: 86ms, application-code: 166ms)
+ GET /frontend-doc 200 in 201ms (next.js: 4ms, application-code: 196ms)
+ GET /frontend-doc 200 in 180ms (next.js: 6ms, application-code: 174ms)
+ GET /frontend-doc 200 in 179ms (next.js: 52ms, application-code: 128ms)
+ GET /frontend-doc 200 in 180ms (next.js: 30ms, application-code: 150ms)
+ GET /frontend-doc 200 in 203ms (next.js: 76ms, application-code: 127ms)
+ GET /frontend-doc 200 in 124ms (next.js: 9ms, application-code: 116ms)
+ GET /frontend-doc 200 in 56ms (next.js: 7ms, application-code: 49ms)
+ GET /frontend-doc 200 in 29ms (next.js: 5ms, application-code: 24ms)
+ GET /frontend-doc 200 in 223ms (next.js: 65ms, application-code: 158ms)
+ GET /frontend-doc 200 in 185ms (next.js: 5ms, application-code: 180ms)
+ GET /frontend-doc 200 in 187ms (next.js: 5ms, application-code: 181ms)
+ GET /frontend-doc 200 in 187ms (next.js: 25ms, application-code: 162ms)
+ GET /frontend-doc 200 in 213ms (next.js: 52ms, application-code: 161ms)
+ GET /frontend-doc 200 in 152ms (next.js: 12ms, application-code: 139ms)
+ GET /frontend-doc 200 in 90ms (next.js: 6ms, application-code: 84ms)
+ GET /frontend-doc 200 in 64ms (next.js: 6ms, application-code: 58ms)
+ GET /frontend-doc 200 in 36ms (next.js: 5ms, application-code: 31ms)
+ GET /frontend-doc 200 in 128ms (next.js: 5ms, application-code: 123ms)
+ GET /frontend-doc 200 in 266ms (next.js: 89ms, application-code: 176ms)
+ GET /frontend-doc 200 in 166ms (next.js: 5ms, application-code: 161ms)
+ GET /frontend-doc 200 in 133ms (next.js: 6ms, application-code: 127ms)
+ GET /frontend-doc 200 in 133ms (next.js: 30ms, application-code: 103ms)
+ GET /frontend-doc 200 in 133ms (next.js: 73ms, application-code: 60ms)
+ GET /frontend-doc 200 in 134ms (next.js: 50ms, application-code: 84ms)
+ GET /frontend-doc 200 in 78ms (next.js: 5ms, application-code: 73ms)
+ GET /frontend-doc 200 in 51ms (next.js: 6ms, application-code: 44ms)
+ GET /frontend-doc 200 in 27ms (next.js: 5ms, application-code: 23ms)
+ GET /services 200 in 97ms (next.js: 73ms, application-code: 24ms)
+ GET /files 200 in 99ms (next.js: 71ms, application-code: 28ms)
+ GET /notes 200 in 102ms (next.js: 73ms, application-code: 29ms)
+ GET /kanban 200 in 98ms (next.js: 71ms, application-code: 27ms)
+ GET /dashboard 200 in 109ms (next.js: 73ms, application-code: 36ms)
+ GET /services 200 in 31ms (next.js: 7ms, application-code: 24ms)
+ GET /dashboard 200 in 22ms (next.js: 4ms, application-code: 18ms)
+ GET /kanban 200 in 22ms (next.js: 5ms, application-code: 17ms)
+ GET /notes 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /notes 200 in 256ms (next.js: 70ms, application-code: 185ms)
+ GET /notes 200 in 152ms (next.js: 5ms, application-code: 147ms)
+ GET /notes 200 in 133ms (next.js: 6ms, application-code: 127ms)
+ GET /notes 200 in 133ms (next.js: 27ms, application-code: 106ms)
+ GET /notes 200 in 159ms (next.js: 50ms, application-code: 109ms)
+ GET /notes 200 in 85ms (next.js: 5ms, application-code: 80ms)
+ GET /notes 200 in 80ms (next.js: 6ms, application-code: 75ms)
+ GET /notes 200 in 57ms (next.js: 6ms, application-code: 51ms)
+ GET /notes 200 in 28ms (next.js: 6ms, application-code: 22ms)
+ GET /notes 200 in 110ms (next.js: 4ms, application-code: 106ms)
+ GET / 200 in 187ms (next.js: 84ms, application-code: 103ms)
+ GET / 200 in 328ms (next.js: 112ms, application-code: 216ms)
+ GET / 200 in 188ms (next.js: 8ms, application-code: 180ms)
+ GET / 200 in 159ms (next.js: 7ms, application-code: 152ms)
+ GET / 200 in 182ms (next.js: 108ms, application-code: 74ms)
+ GET / 200 in 183ms (next.js: 35ms, application-code: 149ms)
+ GET / 200 in 183ms (next.js: 83ms, application-code: 100ms)
+ GET / 200 in 82ms (next.js: 5ms, application-code: 76ms)
+ GET / 200 in 57ms (next.js: 6ms, application-code: 51ms)
+ GET / 200 in 29ms (next.js: 5ms, application-code: 25ms)
+ GET / 200 in 81ms (next.js: 4ms, application-code: 77ms)
+ GET / 200 in 71ms (next.js: 15ms, application-code: 55ms)
+✓ Compiled in 142ms
+ GET / 200 in 119ms (next.js: 77ms, application-code: 42ms)
+ GET / 200 in 236ms (next.js: 96ms, application-code: 140ms)
+ GET / 200 in 113ms (next.js: 5ms, application-code: 108ms)
+ GET / 200 in 118ms (next.js: 5ms, application-code: 113ms)
+ GET / 200 in 118ms (next.js: 23ms, application-code: 95ms)
+ GET / 200 in 118ms (next.js: 43ms, application-code: 75ms)
+ GET / 200 in 155ms (next.js: 65ms, application-code: 90ms)
+ GET / 200 in 95ms (next.js: 6ms, application-code: 89ms)
+ GET / 200 in 68ms (next.js: 7ms, application-code: 61ms)
+ GET / 200 in 28ms (next.js: 5ms, application-code: 23ms)
+ GET /signup 200 in 46ms (next.js: 29ms, application-code: 17ms)
+ GET /login 200 in 107ms (next.js: 75ms, application-code: 33ms)
+ GET /dashboard 200 in 320ms (next.js: 75ms, application-code: 244ms)
+ GET /kanban 200 in 116ms (next.js: 86ms, application-code: 30ms)
+ GET /kanban 200 in 336ms (next.js: 90ms, application-code: 246ms)
+ GET /kanban 200 in 220ms (next.js: 5ms, application-code: 215ms)
+ GET /kanban 200 in 242ms (next.js: 7ms, application-code: 235ms)
+ GET /kanban 200 in 241ms (next.js: 59ms, application-code: 182ms)
+ GET /kanban 200 in 242ms (next.js: 32ms, application-code: 210ms)
+ GET /kanban 200 in 242ms (next.js: 108ms, application-code: 134ms)
+ GET /kanban 200 in 123ms (next.js: 7ms, application-code: 117ms)
+ GET /kanban 200 in 88ms (next.js: 6ms, application-code: 82ms)
+ GET /kanban 200 in 54ms (next.js: 5ms, application-code: 49ms)
+ GET /kanban 200 in 55ms (next.js: 28ms, application-code: 26ms)
+ GET /kanban 200 in 99ms (next.js: 5ms, application-code: 94ms)
+ GET /dashboard 200 in 124ms (next.js: 92ms, application-code: 31ms)
+✓ Compiled in 131ms
+ GET /dashboard 200 in 333ms (next.js: 123ms, application-code: 210ms)
+ GET /dashboard 200 in 201ms (next.js: 5ms, application-code: 197ms)
+ GET /dashboard 200 in 171ms (next.js: 7ms, application-code: 163ms)
+ GET /dashboard 200 in 171ms (next.js: 39ms, application-code: 132ms)
+ GET /dashboard 200 in 170ms (next.js: 101ms, application-code: 69ms)
+ GET /dashboard 200 in 171ms (next.js: 77ms, application-code: 95ms)
+ GET /dashboard 200 in 138ms (next.js: 6ms, application-code: 132ms)
+ GET /dashboard 200 in 105ms (next.js: 7ms, application-code: 97ms)
+ GET /dashboard 200 in 67ms (next.js: 6ms, application-code: 61ms)
+ GET /dashboard 200 in 67ms (next.js: 31ms, application-code: 36ms)
+ GET /services 200 in 99ms (next.js: 73ms, application-code: 25ms)
+ GET /services 200 in 260ms (next.js: 95ms, application-code: 165ms)
+ GET /services 200 in 136ms (next.js: 4ms, application-code: 132ms)
+ GET /services 200 in 159ms (next.js: 5ms, application-code: 153ms)
+ GET /services 200 in 158ms (next.js: 76ms, application-code: 82ms)
+ GET /services 200 in 159ms (next.js: 52ms, application-code: 107ms)
+ GET /services 200 in 160ms (next.js: 26ms, application-code: 133ms)
+ GET /services 200 in 149ms (next.js: 8ms, application-code: 141ms)
+ GET /services 200 in 101ms (next.js: 8ms, application-code: 94ms)
+ GET /services 200 in 63ms (next.js: 5ms, application-code: 58ms)
+ GET /services 200 in 63ms (next.js: 34ms, application-code: 29ms)
+ GET /services 200 in 134ms (next.js: 6ms, application-code: 128ms)
+ GET /services 200 in 308ms (next.js: 107ms, application-code: 201ms)
+ GET /services 200 in 192ms (next.js: 5ms, application-code: 187ms)
+ GET /services 200 in 164ms (next.js: 6ms, application-code: 158ms)
+ GET /services 200 in 164ms (next.js: 30ms, application-code: 133ms)
+ GET /services 200 in 165ms (next.js: 58ms, application-code: 107ms)
+ GET /services 200 in 165ms (next.js: 98ms, application-code: 68ms)
+ GET /services 200 in 115ms (next.js: 8ms, application-code: 108ms)
+ GET /services 200 in 82ms (next.js: 9ms, application-code: 73ms)
+ GET /services 200 in 54ms (next.js: 29ms, application-code: 25ms)
+ GET /services 200 in 55ms (next.js: 6ms, application-code: 50ms)
+ GET /services 200 in 99ms (next.js: 5ms, application-code: 94ms)
+ GET /services 200 in 54ms (next.js: 6ms, application-code: 48ms)
+ GET /services 200 in 55ms (next.js: 6ms, application-code: 49ms)
+ GET /services 200 in 46ms (next.js: 5ms, application-code: 41ms)
+ GET /services 200 in 262ms (next.js: 110ms, application-code: 152ms)
+ GET /services 200 in 121ms (next.js: 4ms, application-code: 117ms)
+ GET /services 200 in 178ms (next.js: 5ms, application-code: 173ms)
+ GET /services 200 in 178ms (next.js: 26ms, application-code: 152ms)
+ GET /services 200 in 178ms (next.js: 47ms, application-code: 131ms)
+ GET /services 200 in 179ms (next.js: 68ms, application-code: 111ms)
+ GET /services 200 in 142ms (next.js: 7ms, application-code: 135ms)
+ GET /services 200 in 85ms (next.js: 5ms, application-code: 80ms)
+ GET /services 200 in 57ms (next.js: 5ms, application-code: 52ms)
+ GET /services 200 in 57ms (next.js: 26ms, application-code: 31ms)
+ GET /services 200 in 328ms (next.js: 113ms, application-code: 215ms)
+ GET /services 200 in 177ms (next.js: 5ms, application-code: 172ms)
+ GET /services 200 in 178ms (next.js: 6ms, application-code: 171ms)
+ GET /services 200 in 177ms (next.js: 73ms, application-code: 104ms)
+ GET /services 200 in 178ms (next.js: 38ms, application-code: 140ms)
+ GET /services 200 in 178ms (next.js: 120ms, application-code: 58ms)
+ GET /services 200 in 113ms (next.js: 7ms, application-code: 106ms)
+ GET /services 200 in 85ms (next.js: 7ms, application-code: 78ms)
+ GET /services 200 in 58ms (next.js: 5ms, application-code: 53ms)
+ GET /services 200 in 58ms (next.js: 29ms, application-code: 29ms)
+ GET /services 200 in 100ms (next.js: 5ms, application-code: 95ms)
+ GET /services 200 in 273ms (next.js: 103ms, application-code: 170ms)
+ GET /services 200 in 172ms (next.js: 6ms, application-code: 167ms)
+ GET /services 200 in 145ms (next.js: 6ms, application-code: 139ms)
+ GET /services 200 in 145ms (next.js: 27ms, application-code: 118ms)
+ GET /services 200 in 178ms (next.js: 48ms, application-code: 131ms)
+ GET /services 200 in 112ms (next.js: 6ms, application-code: 107ms)
+ GET /services 200 in 130ms (next.js: 5ms, application-code: 125ms)
+ GET /services 200 in 98ms (next.js: 7ms, application-code: 92ms)
+ GET /services 200 in 63ms (next.js: 6ms, application-code: 57ms)
+ GET /services 200 in 62ms (next.js: 31ms, application-code: 31ms)
+ GET /services 200 in 140ms (next.js: 5ms, application-code: 135ms)
+ GET /services 200 in 306ms (next.js: 102ms, application-code: 204ms)
+ GET /services 200 in 166ms (next.js: 5ms, application-code: 161ms)
+ GET /services 200 in 169ms (next.js: 6ms, application-code: 163ms)
+ GET /services 200 in 169ms (next.js: 67ms, application-code: 102ms)
+ GET /services 200 in 170ms (next.js: 35ms, application-code: 134ms)
+ GET /services 200 in 114ms (next.js: 6ms, application-code: 107ms)
+ GET /services 200 in 126ms (next.js: 7ms, application-code: 118ms)
+ GET /services 200 in 96ms (next.js: 7ms, application-code: 89ms)
+ GET /services 200 in 65ms (next.js: 8ms, application-code: 57ms)
+ GET /services 200 in 65ms (next.js: 32ms, application-code: 33ms)
+ GET /services 200 in 111ms (next.js: 4ms, application-code: 107ms)
+ GET /services 200 in 294ms (next.js: 100ms, application-code: 194ms)
+ GET /services 200 in 182ms (next.js: 5ms, application-code: 177ms)
+ GET /services 200 in 154ms (next.js: 6ms, application-code: 148ms)
+ GET /services 200 in 155ms (next.js: 35ms, application-code: 120ms)
+ GET /services 200 in 110ms (next.js: 6ms, application-code: 103ms)
+ GET /services 200 in 106ms (next.js: 5ms, application-code: 100ms)
+ GET /services 200 in 104ms (next.js: 5ms, application-code: 99ms)
+ GET /services 200 in 79ms (next.js: 6ms, application-code: 73ms)
+ GET /services 200 in 54ms (next.js: 5ms, application-code: 48ms)
+ GET /services 200 in 54ms (next.js: 26ms, application-code: 28ms)
+✓ Compiled in 181ms
+ GET /services 200 in 295ms (next.js: 127ms, application-code: 168ms)
+ GET /services 200 in 136ms (next.js: 4ms, application-code: 132ms)
+ GET /services 200 in 134ms (next.js: 28ms, application-code: 106ms)
+ GET /services 200 in 136ms (next.js: 5ms, application-code: 131ms)
+ GET /services 200 in 135ms (next.js: 52ms, application-code: 83ms)
+ GET /services 200 in 132ms (next.js: 6ms, application-code: 126ms)
+ GET /services 200 in 132ms (next.js: 32ms, application-code: 100ms)
+ GET /services 200 in 79ms (next.js: 7ms, application-code: 73ms)
+ GET /services 200 in 52ms (next.js: 4ms, application-code: 48ms)
+ GET /services 200 in 52ms (next.js: 27ms, application-code: 25ms)
+✓ Compiled in 136ms
+ GET /services 200 in 402ms (next.js: 83ms, application-code: 319ms)
+ GET /services 200 in 294ms (next.js: 78ms, application-code: 216ms)
+ GET /services 200 in 143ms (next.js: 7ms, application-code: 136ms)
+ GET /services 200 in 143ms (next.js: 34ms, application-code: 109ms)
+ GET /services 200 in 143ms (next.js: 56ms, application-code: 86ms)
+ GET /services 200 in 132ms (next.js: 6ms, application-code: 125ms)
+ GET /services 200 in 132ms (next.js: 32ms, application-code: 100ms)
+ GET /services 200 in 77ms (next.js: 6ms, application-code: 70ms)
+ GET /services 200 in 52ms (next.js: 4ms, application-code: 47ms)
+ GET /services 200 in 52ms (next.js: 27ms, application-code: 25ms)
+ GET /services 200 in 255ms (next.js: 98ms, application-code: 156ms)
+ GET /services 200 in 189ms (next.js: 9ms, application-code: 180ms)
+ GET /services 200 in 168ms (next.js: 8ms, application-code: 160ms)
+ GET /services 200 in 168ms (next.js: 34ms, application-code: 134ms)
+ GET /services 200 in 168ms (next.js: 58ms, application-code: 110ms)
+ GET /services 200 in 160ms (next.js: 5ms, application-code: 155ms)
+ GET /services 200 in 134ms (next.js: 6ms, application-code: 129ms)
+ GET /services 200 in 77ms (next.js: 8ms, application-code: 70ms)
+ GET /services 200 in 51ms (next.js: 5ms, application-code: 46ms)
+ GET /services 200 in 51ms (next.js: 26ms, application-code: 25ms)
+ GET /services 200 in 352ms (next.js: 124ms, application-code: 228ms)
+ GET /services 200 in 210ms (next.js: 6ms, application-code: 203ms)
+ GET /services 200 in 162ms (next.js: 9ms, application-code: 153ms)
+ GET /services 200 in 161ms (next.js: 35ms, application-code: 126ms)
+ GET /services 200 in 161ms (next.js: 60ms, application-code: 101ms)
+ GET /services 200 in 105ms (next.js: 6ms, application-code: 98ms)
+ GET /services 200 in 107ms (next.js: 5ms, application-code: 101ms)
+ GET /services 200 in 81ms (next.js: 7ms, application-code: 75ms)
+ GET /services 200 in 57ms (next.js: 7ms, application-code: 50ms)
+ GET /services 200 in 57ms (next.js: 27ms, application-code: 30ms)
+ GET /services 200 in 255ms (next.js: 74ms, application-code: 181ms)
+ GET /services 200 in 150ms (next.js: 5ms, application-code: 145ms)
+ GET /services 200 in 151ms (next.js: 28ms, application-code: 123ms)
+ GET /services 200 in 152ms (next.js: 6ms, application-code: 146ms)
+ GET /services 200 in 152ms (next.js: 48ms, application-code: 104ms)
+ GET /services 200 in 112ms (next.js: 6ms, application-code: 107ms)
+ GET /services 200 in 121ms (next.js: 6ms, application-code: 115ms)
+ GET /services 200 in 95ms (next.js: 7ms, application-code: 88ms)
+ GET /services 200 in 66ms (next.js: 7ms, application-code: 59ms)
+ GET /services 200 in 66ms (next.js: 35ms, application-code: 32ms)
+ GET /services 200 in 122ms (next.js: 4ms, application-code: 117ms)
+ GET /kanban 200 in 111ms (next.js: 80ms, application-code: 32ms)
+ GET /notes 200 in 98ms (next.js: 70ms, application-code: 27ms)
+ GET /files 200 in 98ms (next.js: 73ms, application-code: 24ms)
+ GET /dashboard 200 in 109ms (next.js: 78ms, application-code: 31ms)
+ GET /dashboard 200 in 298ms (next.js: 106ms, application-code: 192ms)
+ GET /dashboard 200 in 183ms (next.js: 5ms, application-code: 178ms)
+ GET /dashboard 200 in 145ms (next.js: 44ms, application-code: 102ms)
+ GET /dashboard 200 in 146ms (next.js: 9ms, application-code: 138ms)
+ GET /dashboard 200 in 145ms (next.js: 66ms, application-code: 79ms)
+ GET /dashboard 200 in 90ms (next.js: 5ms, application-code: 85ms)
+ GET /dashboard 200 in 127ms (next.js: 5ms, application-code: 122ms)
+ GET /dashboard 200 in 106ms (next.js: 6ms, application-code: 99ms)
+ GET /dashboard 200 in 76ms (next.js: 7ms, application-code: 69ms)
+ GET /dashboard 200 in 76ms (next.js: 32ms, application-code: 44ms)
+ GET /dashboard 200 in 219ms (next.js: 5ms, application-code: 215ms)
+ GET /kanban 200 in 96ms (next.js: 70ms, application-code: 25ms)
+ GET /kanban 200 in 288ms (next.js: 94ms, application-code: 194ms)
+ GET /kanban 200 in 184ms (next.js: 6ms, application-code: 178ms)
+ GET /kanban 200 in 156ms (next.js: 6ms, application-code: 150ms)
+ GET /kanban 200 in 156ms (next.js: 55ms, application-code: 101ms)
+ GET /kanban 200 in 157ms (next.js: 31ms, application-code: 126ms)
+ GET /kanban 200 in 107ms (next.js: 6ms, application-code: 101ms)
+ GET /kanban 200 in 113ms (next.js: 5ms, application-code: 108ms)
+ GET /kanban 200 in 87ms (next.js: 7ms, application-code: 80ms)
+ GET /kanban 200 in 57ms (next.js: 6ms, application-code: 51ms)
+ GET /kanban 200 in 58ms (next.js: 30ms, application-code: 28ms)
+ GET /kanban 200 in 351ms (next.js: 76ms, application-code: 275ms)
+ GET /kanban 200 in 255ms (next.js: 62ms, application-code: 193ms)
+ GET /kanban 200 in 164ms (next.js: 5ms, application-code: 158ms)
+ GET /kanban 200 in 163ms (next.js: 55ms, application-code: 108ms)
+ GET /kanban 200 in 163ms (next.js: 87ms, application-code: 76ms)
+ GET /kanban 200 in 165ms (next.js: 28ms, application-code: 137ms)
+ GET /kanban 200 in 117ms (next.js: 7ms, application-code: 110ms)
+ GET /kanban 200 in 89ms (next.js: 6ms, application-code: 82ms)
+ GET /kanban 200 in 61ms (next.js: 8ms, application-code: 53ms)
+ GET /kanban 200 in 58ms (next.js: 29ms, application-code: 29ms)
+ GET /kanban 200 in 238ms (next.js: 88ms, application-code: 150ms)
+ GET /kanban 200 in 145ms (next.js: 4ms, application-code: 141ms)
+ GET /kanban 200 in 122ms (next.js: 28ms, application-code: 95ms)
+ GET /kanban 200 in 122ms (next.js: 50ms, application-code: 72ms)
+ GET /kanban 200 in 122ms (next.js: 71ms, application-code: 51ms)
+ GET /kanban 200 in 124ms (next.js: 5ms, application-code: 119ms)
+ GET /kanban 200 in 114ms (next.js: 5ms, application-code: 109ms)
+ GET /kanban 200 in 87ms (next.js: 7ms, application-code: 80ms)
+ GET /kanban 200 in 60ms (next.js: 5ms, application-code: 55ms)
+ GET /kanban 200 in 60ms (next.js: 36ms, application-code: 24ms)
+ GET /dashboard 200 in 101ms (next.js: 74ms, application-code: 27ms)
+ GET /dashboard 200 in 327ms (next.js: 105ms, application-code: 221ms)
+ GET /dashboard 200 in 185ms (next.js: 5ms, application-code: 180ms)
+ GET /dashboard 200 in 198ms (next.js: 6ms, application-code: 191ms)
+ GET /dashboard 200 in 197ms (next.js: 55ms, application-code: 143ms)
+ GET /dashboard 200 in 197ms (next.js: 86ms, application-code: 111ms)
+ GET /dashboard 200 in 225ms (next.js: 113ms, application-code: 112ms)
+ GET /dashboard 200 in 108ms (next.js: 7ms, application-code: 101ms)
+ GET /dashboard 200 in 61ms (next.js: 6ms, application-code: 54ms)
+ GET /dashboard 200 in 31ms (next.js: 5ms, application-code: 26ms)
+ GET /dashboard 200 in 36ms (next.js: 5ms, application-code: 32ms)
+ GET /kanban 200 in 107ms (next.js: 69ms, application-code: 38ms)
+✓ Compiled in 149ms
+ GET /kanban 200 in 227ms (next.js: 83ms, application-code: 143ms)
+ GET /kanban 200 in 169ms (next.js: 5ms, application-code: 164ms)
+ GET /kanban 200 in 199ms (next.js: 5ms, application-code: 194ms)
+ GET /kanban 200 in 199ms (next.js: 28ms, application-code: 171ms)
+ GET /kanban 200 in 201ms (next.js: 51ms, application-code: 150ms)
+ GET /kanban 200 in 193ms (next.js: 18ms, application-code: 175ms)
+ GET /kanban 200 in 134ms (next.js: 6ms, application-code: 128ms)
+ GET /kanban 200 in 104ms (next.js: 4ms, application-code: 100ms)
+ GET /kanban 200 in 74ms (next.js: 7ms, application-code: 67ms)
+ GET /kanban 200 in 75ms (next.js: 39ms, application-code: 35ms)
+ GET /kanban 200 in 120ms (next.js: 5ms, application-code: 115ms)
+ GET /dashboard 200 in 104ms (next.js: 76ms, application-code: 28ms)
+ GET /kanban 200 in 24ms (next.js: 5ms, application-code: 19ms)
+ GET /dashboard 200 in 33ms (next.js: 5ms, application-code: 28ms)
+✓ Compiled in 145ms
+ GET /dashboard 200 in 307ms (next.js: 105ms, application-code: 202ms)
+ GET /dashboard 200 in 194ms (next.js: 6ms, application-code: 187ms)
+ GET /dashboard 200 in 140ms (next.js: 58ms, application-code: 82ms)
+ GET /dashboard 200 in 141ms (next.js: 34ms, application-code: 107ms)
+ GET /dashboard 200 in 142ms (next.js: 8ms, application-code: 134ms)
+ GET /dashboard 200 in 169ms (next.js: 80ms, application-code: 89ms)
+ GET /dashboard 200 in 119ms (next.js: 5ms, application-code: 114ms)
+ GET /dashboard 200 in 86ms (next.js: 7ms, application-code: 79ms)
+ GET /dashboard 200 in 55ms (next.js: 5ms, application-code: 50ms)
+ GET /dashboard 200 in 56ms (next.js: 29ms, application-code: 26ms)
+ GET /kanban 200 in 94ms (next.js: 69ms, application-code: 25ms)
+ GET /notes 200 in 99ms (next.js: 73ms, application-code: 26ms)
+ GET /kanban 200 in 20ms (next.js: 5ms, application-code: 15ms)
+ GET /services 200 in 103ms (next.js: 77ms, application-code: 26ms)
+ GET /dashboard 200 in 25ms (next.js: 5ms, application-code: 19ms)
+ GET /kanban 200 in 20ms (next.js: 4ms, application-code: 16ms)
+ GET /notes 200 in 19ms (next.js: 5ms, application-code: 14ms)
+ GET /files 200 in 110ms (next.js: 81ms, application-code: 29ms)
+ GET /services 200 in 21ms (next.js: 4ms, application-code: 17ms)
+ GET /frontend-doc 200 in 101ms (next.js: 74ms, application-code: 26ms)
+ GET /services 200 in 22ms (next.js: 5ms, application-code: 17ms)
+ GET /frontend-doc 200 in 19ms (next.js: 4ms, application-code: 14ms)
+ GET /dashboard 200 in 24ms (next.js: 6ms, application-code: 18ms)
+ GET /kanban 200 in 22ms (next.js: 4ms, application-code: 18ms)
+ GET /dashboard 200 in 23ms (next.js: 4ms, application-code: 18ms)
+ GET /kanban 200 in 28ms (next.js: 5ms, application-code: 22ms)
+ GET /notes 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /files 200 in 21ms (next.js: 5ms, application-code: 16ms)
+ GET /services 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /frontend-doc 200 in 18ms (next.js: 4ms, application-code: 14ms)
+ GET /services 200 in 20ms (next.js: 4ms, application-code: 16ms)
+ GET /files 200 in 20ms (next.js: 4ms, application-code: 15ms)
+ GET /notes 200 in 28ms (next.js: 6ms, application-code: 22ms)
+ GET /kanban 200 in 21ms (next.js: 4ms, application-code: 17ms)
+ GET /dashboard 200 in 22ms (next.js: 5ms, application-code: 16ms)
+ GET /kanban 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /notes 200 in 18ms (next.js: 5ms, application-code: 13ms)
+ GET /files 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /files 200 in 291ms (next.js: 90ms, application-code: 201ms)
+ GET /files 200 in 198ms (next.js: 5ms, application-code: 194ms)
+ GET /files 200 in 173ms (next.js: 8ms, application-code: 165ms)
+ GET /files 200 in 173ms (next.js: 35ms, application-code: 138ms)
+ GET /files 200 in 173ms (next.js: 69ms, application-code: 104ms)
+ GET /files 200 in 114ms (next.js: 22ms, application-code: 91ms)
+ GET /files 200 in 110ms (next.js: 5ms, application-code: 104ms)
+ GET /files 200 in 83ms (next.js: 7ms, application-code: 76ms)
+ GET /files 200 in 49ms (next.js: 26ms, application-code: 23ms)
+ GET /files 200 in 50ms (next.js: 6ms, application-code: 45ms)
+ GET /files 200 in 107ms (next.js: 5ms, application-code: 102ms)
+ GET /dashboard 200 in 107ms (next.js: 80ms, application-code: 27ms)
+ GET /kanban 200 in 96ms (next.js: 67ms, application-code: 29ms)
+ GET /kanban 200 in 261ms (next.js: 70ms, application-code: 190ms)
+ GET /kanban 200 in 189ms (next.js: 5ms, application-code: 183ms)
+ GET /kanban 200 in 157ms (next.js: 30ms, application-code: 127ms)
+ GET /kanban 200 in 157ms (next.js: 56ms, application-code: 100ms)
+ GET /kanban 200 in 158ms (next.js: 8ms, application-code: 151ms)
+ GET /kanban 200 in 103ms (next.js: 6ms, application-code: 97ms)
+ GET /kanban 200 in 119ms (next.js: 6ms, application-code: 114ms)
+ GET /kanban 200 in 90ms (next.js: 7ms, application-code: 84ms)
+ GET /kanban 200 in 60ms (next.js: 6ms, application-code: 54ms)
+ GET /kanban 200 in 60ms (next.js: 30ms, application-code: 30ms)
+ GET /dashboard 200 in 101ms (next.js: 73ms, application-code: 27ms)
+ GET /kanban 200 in 26ms (next.js: 5ms, application-code: 21ms)
+ GET /kanban 200 in 250ms (next.js: 88ms, application-code: 162ms)
+ GET /kanban 200 in 136ms (next.js: 5ms, application-code: 131ms)
+ GET /kanban 200 in 134ms (next.js: 29ms, application-code: 105ms)
+ GET /kanban 200 in 134ms (next.js: 51ms, application-code: 82ms)
+ GET /kanban 200 in 136ms (next.js: 7ms, application-code: 129ms)
+ GET /kanban 200 in 86ms (next.js: 5ms, application-code: 81ms)
+ GET /kanban 200 in 131ms (next.js: 6ms, application-code: 125ms)
+ GET /kanban 200 in 104ms (next.js: 6ms, application-code: 98ms)
+ GET /kanban 200 in 75ms (next.js: 8ms, application-code: 67ms)
+ GET /kanban 200 in 75ms (next.js: 42ms, application-code: 33ms)
+ GET /kanban 200 in 283ms (next.js: 87ms, application-code: 196ms)
+ GET /kanban 200 in 193ms (next.js: 4ms, application-code: 188ms)
+ GET /kanban 200 in 169ms (next.js: 6ms, application-code: 162ms)
+ GET /kanban 200 in 169ms (next.js: 30ms, application-code: 138ms)
+ GET /kanban 200 in 169ms (next.js: 50ms, application-code: 119ms)
+ GET /kanban 200 in 125ms (next.js: 6ms, application-code: 119ms)
+ GET /kanban 200 in 115ms (next.js: 6ms, application-code: 109ms)
+ GET /kanban 200 in 84ms (next.js: 7ms, application-code: 77ms)
+ GET /kanban 200 in 57ms (next.js: 5ms, application-code: 52ms)
+ GET /kanban 200 in 37ms (next.js: 6ms, application-code: 31ms)
+ GET /dashboard 200 in 97ms (next.js: 73ms, application-code: 25ms)
+ GET /dashboard 200 in 24ms (next.js: 5ms, application-code: 19ms)
+ GET /kanban 200 in 21ms (next.js: 5ms, application-code: 16ms)
+ GET /notes 200 in 102ms (next.js: 77ms, application-code: 25ms)
+ GET /files 200 in 104ms (next.js: 78ms, application-code: 26ms)
+ GET /services 200 in 102ms (next.js: 79ms, application-code: 24ms)
+ GET /frontend-doc 200 in 102ms (next.js: 73ms, application-code: 29ms)
+ GET /services 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /dashboard 200 in 24ms (next.js: 4ms, application-code: 20ms)
+ GET /notes 200 in 24ms (next.js: 5ms, application-code: 19ms)
+ GET /files 200 in 21ms (next.js: 4ms, application-code: 17ms)
+ GET /services 200 in 20ms (next.js: 4ms, application-code: 16ms)
+ GET /frontend-doc 200 in 20ms (next.js: 4ms, application-code: 15ms)
+ GET /services 200 in 20ms (next.js: 4ms, application-code: 15ms)
+ GET /frontend-doc 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /services 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /frontend-doc 200 in 19ms (next.js: 5ms, application-code: 15ms)
+ GET /services 200 in 18ms (next.js: 4ms, application-code: 14ms)
+ GET /files 200 in 18ms (next.js: 4ms, application-code: 14ms)
+ GET /frontend-doc 200 in 23ms (next.js: 4ms, application-code: 18ms)
+ GET /services 200 in 18ms (next.js: 4ms, application-code: 13ms)
+✓ Compiled in 117ms
+ GET /services 200 in 121ms (next.js: 83ms, application-code: 39ms)
+✓ Compiled in 107ms
+ GET /services 200 in 137ms (next.js: 97ms, application-code: 40ms)
+✓ Compiled in 125ms
+ GET /services 200 in 122ms (next.js: 85ms, application-code: 37ms)
+ GET /services 200 in 260ms (next.js: 88ms, application-code: 172ms)
+ GET /services 200 in 135ms (next.js: 5ms, application-code: 131ms)
+ GET /services 200 in 137ms (next.js: 6ms, application-code: 132ms)
+ GET /services 200 in 137ms (next.js: 26ms, application-code: 112ms)
+ GET /services 200 in 137ms (next.js: 51ms, application-code: 86ms)
+ GET /services 200 in 163ms (next.js: 82ms, application-code: 81ms)
+ GET /services 200 in 128ms (next.js: 6ms, application-code: 122ms)
+ GET /services 200 in 101ms (next.js: 6ms, application-code: 95ms)
+ GET /services 200 in 71ms (next.js: 6ms, application-code: 65ms)
+ GET /services 200 in 71ms (next.js: 47ms, application-code: 24ms)
+ GET /dashboard 200 in 108ms (next.js: 77ms, application-code: 31ms)
+ GET /kanban 200 in 104ms (next.js: 76ms, application-code: 28ms)
+ GET /notes 200 in 96ms (next.js: 71ms, application-code: 24ms)
+ GET /files 200 in 132ms (next.js: 101ms, application-code: 31ms)
+ GET /services 200 in 19ms (next.js: 5ms, application-code: 14ms)
+ GET /frontend-doc 200 in 105ms (next.js: 80ms, application-code: 24ms)
+ GET /files 200 in 25ms (next.js: 5ms, application-code: 21ms)
+ GET /services 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /dashboard 200 in 25ms (next.js: 5ms, application-code: 20ms)
+ GET /services 200 in 21ms (next.js: 4ms, application-code: 17ms)

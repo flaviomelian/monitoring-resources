@@ -1,52 +1,73 @@
-# Cluster Infrastructure Monitor
+# DockStream — Cluster Infrastructure Monitor
 
-Un sistema de monitorización y clúster distribuido de almacenamiento a bajo nivel construido con **Spring Boot (Java)**, **Docker / Docker Compose**, y un frontend reactivo en **Next.js**. 
-
-El proyecto simula una infraestructura de red interna balanceada con topología de replicación en abanico (Fan-Out), latencia de red controlada y un pipeline de observabilidad en tiempo real.
+Sistema avanzado de monitorización de recursos y orquestación de contenedores distribuida, construido bajo una arquitectura de microservicios contenerizados y un panel de operaciones en tiempo real.
 
 ---
 
 ## Arquitectura del Sistema
 
-El clúster está diseñado bajo un modelo de aislamiento de contextos mediante contenedores independientes que se comunican a través de una red virtual interna (`monitor-net`).
+El clúster opera sobre una red virtual aislada (`monitor-net`) orquestada mediante **Docker Compose**, separando responsabilidades entre persistencia, lógica de negocio y capa de presentación.
 
-### Componentes Clave:
-* **Gateway de Ingesta (`alpine-ingest-app`)**: Actúa como el punto de entrada del clúster (NameNode). Intercepta los archivos entrantes, introduce de forma deliberada una latencia de red de 2 segundos para simular entornos distribuidos reales y distribuye de forma concurrente el flujo en abanico.
-* **Nodos de Réplica (`alpine-replica-X`)**: Actúan como nodos dedicados de almacenamiento masivo (DataNodes). Persisten físicamente los bloques en volúmenes independientes y recopilan métricas de hardware locales.
-* **Pipeline de Observabilidad**: Un recolector asíncrono interroga las métricas del host (`OperatingSystemMXBean`) y calcula el tamaño exacto en bytes de los descriptores de archivos para alimentar las gráficas temporales del Frontend.
-
----
-
-## Desafíos Técnicos Resueltos
-
-### 1. Control de Concurrencia y Evasión de Deadlocks en la JVM
-Durante el desarrollo del pipeline reactivo con `WebClient`, el bloqueo del hilo de ejecución principal de Tomcat (`Tomcat-exec`) en combinación con flujos asíncronos concurrentes provocó un escenario de **Deadlock de infraestructura** (bloqueo mutuo de hilos de red esperando el volcado de buffers). 
-
-* **Solución**: Se rediseñó la lógica abstrayendo la concurrencia mediante `CompletableFuture` nativos sobre un pool aislado (`ForkJoinPool`), aislando los buffers de memoria con `ByteArrayResource` antes de iniciar el Fan-Out para romper de raíz el acoplamiento de hilos.
-
-### 2. Aislamiento de Contextos de Almacenamiento en Docker
-Al compartir la lógica de negocio en una arquitectura monolítica-distribuida, los contenedores intentaban leer rutas físicas absolutas inexistentes debido al aislamiento de volumen.
-* **Solución**: Se implementó una resolución dinámica de almacenamiento basada en variables de entorno de Docker (`cluster.storage.path`), delegando el inventario de archivos a un endpoint puente interno por HTTP cuando el Gateway de Ingesta solicita el estado de las réplicas.
+### Componentes Clave de la Malla:
+- **`crud-db` (MySQL 8.0)**: Nodo de base de datos relacional persistente con healthchecks estrictos para asegurar la sincronización inicial del clúster.
+- **`crud-api` (Node.js / Backend)**: API REST centralizada que gestiona la persistencia de elementos, el enrutamiento de peticiones y la lógica transaccional.
+- **`crud-web` (React + Vite + Tailwind CSS)**: Interfaz gráfica de operaciones en entorno oscuro, optimizada para la monitorización de recursos, gestión de tareas (Kanban) y telemetría de nodos.
 
 ---
 
-## Tecnologías Utilizadas
+## 🛠️ Desafíos Técnicos y Soluciones
 
-* **Backend**: Java 21, Spring Boot 4.x, Spring Data JPA, WebFlux (WebClient).
-* **Base de Datos**: MySQL 8.0.
-* **Frontend**: Next.js, React, Tailwind CSS, Recharts.
-* **Infraestructura**: Docker, Docker Compose, Linux (Alpine OS).
+1. **Gestión de Volúmenes y Sincronización en Entornos Docker**
+   - *Problema*: Pérdida de dependencias locales (`node_modules`) al montar volúmenes de desarrollo interactivos sobre los contenedores de Node.
+   - *Solución*: Configuración de comandos de arranque dinámicos combinados con la gestión limpia de volúmenes persistentes para garantizar la integridad del entorno sin intervención manual.
+
+2. **Compilación de Estilos y Motor de Utilidades**
+   - *Problema*: Incompatibilidades de directivas de diseño en contenedores ligeros Alpine.
+   - *Solución*: Estandarización de componentes modulares y adaptación de clases de diseño hiper-optimizadas para garantizar una respuesta visual fluida y sin bloqueos de compilación.
 
 ---
 
-## Instalación y Despliegue
+## ⚙️ Tecnologías Utilizadas
+
+- **Backend & Base de Datos**: Node.js, API REST, MySQL 8.0.
+- **Frontend**: React, Vite, Tailwind CSS, Lucide Icons.
+- **Infraestructura & Contenedorización**: Docker, Docker Compose, Linux Alpine, Redes de Malla Virtuales.
+
+---
+
+## Guía de Despliegue Rápido
 
 ### Requisitos Previos
-* Docker y Docker Compose instalados.
-* Maven o el wrapper de Spring en local (`./mvnw`).
+- Docker y Docker Compose instalados en el sistema.
 
-### Pasos para levantar el Clúster
+### Pasos para Levantar el Clúster
 
-1. **Clonar el repositorio y situarse en la raíz:**
+1. **Clonar el repositorio y situarse en la raíz del proyecto:**
    ```bash
    cd monitoring-resources
+   ```
+
+2. **Desplegar la infraestructura con Docker Compose (forzando reconstrucción limpia):**
+   ```bash
+   docker-compose down -v
+   docker-compose up -d --build
+   ```
+
+3. **Acceder al panel web de operaciones:**
+   - La interfaz estará disponible en: `http://localhost:3100`
+
+---
+
+## Telemetría y Estado de la Malla
+
+El entorno incorpora un sistema de supervisión integrado en el panel de control:
+- **Mesh Cluster**: `Operational` (Sincronizado en tiempo real).
+- **Telemetry**: Activo mediante sondeo asíncrono.
+- **Seguridad**: Canales protegidos bajo especificaciones TLS y pasarela de proxy interna de red.
+
+---
+
+## Autor
+
+**Flavio Melián Santana**  
+*Arquitectura de Software y Sistemas Distribuidos*
