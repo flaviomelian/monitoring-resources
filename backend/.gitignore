@@ -32,3 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 data/**
+
+## Credenciales de administrador ##
+cred.txt
