@@ -2,7 +2,9 @@
 
 import { useState, FormEvent } from "react";
 import Link from "next/link";
-import { Server, ArrowRight, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import dockstreamLogo from "../img/DockStream-Logo.png";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -65,14 +67,22 @@ export default function LoginPage() {
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl animate-pulse" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293710_1px,transparent_1px),linear-gradient(to_bottom,#1f293710_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       </div>
+
       <Link href="/" className="group inline-block">
-        <div className="relative z-10 mb-8 flex items-center space-x-3 transition-transform duration-300 group-hover:scale-105">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/30 transition-all duration-300 group-hover:shadow-blue-500/50 group-hover:rotate-6">
-            <Server className="w-6 h-6 text-white transition-transform duration-300 group-hover:scale-110" />
+        <div className="relative z-10 mb-6 flex items-center justify-center cursor-pointer focus:outline-none">
+          {/* Contenedor del Isotipo ampliado con efecto Glow y animación subtle */}
+          <div className="relative w-28 h-28 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-cyan-500/25 blur-2xl transition-all duration-700 ease-out group-hover:bg-cyan-400/45 group-hover:blur-3xl" />
+            
+            <Image
+              src={dockstreamLogo}
+              alt="DockStream"
+              width={150}
+              height={150}
+              priority
+              className="relative z-10 w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-105 drop-shadow-[0_0_25px_rgba(34,211,238,0.35)]"
+            />
           </div>
-          <span className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent transition-opacity duration-300 group-hover:opacity-90">
-            DockStream
-          </span>
         </div>
       </Link>
 
